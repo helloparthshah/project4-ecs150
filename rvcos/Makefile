@@ -41,6 +41,8 @@ TARGET_OBJS =   $(OBJ_DIR)/main.o               \
                 $(OBJ_DIR)/Deque.o				\
                 $(OBJ_DIR)/memoryPool.o			\
                 $(OBJ_DIR)/RVCOS.o				\
+                $(OBJ_DIR)/graphics.o			\
+                $(OBJ_DIR)/RVCOSPaletteDefault.o\
                 $(OBJ_DIR)/startup.o
 
 all: directories $(BIN_DIR)/$(TARGET_NAME)

@@ -102,6 +102,7 @@ typedef struct {
   uint32_t DRed : 8;
   uint32_t DAlpha : 8;
 } SColor, *SColorRef;
+
 TStatus RVCInitialize(uint32_t *gp);
 TStatus RVCTickMS(uint32_t *tickmsref);
 TStatus RVCTickCount(TTickRef tickref);

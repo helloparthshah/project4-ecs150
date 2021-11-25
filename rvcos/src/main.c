@@ -30,6 +30,7 @@ uint32_t c_syscall_handler(uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3,
   void *p0 = (void *)a0;
   void *p1 = (void *)a1;
   void *p2 = (void *)a2;
+  void *p3 = (void *)a3;
   void *p4 = (void *)a4;
 
   TStatus status = RVCOS_STATUS_FAILURE;
@@ -80,12 +81,31 @@ uint32_t c_syscall_handler(uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3,
     status = RVCMutexAcquire(a0, a1);
   } else if (code == 22) {
     status = RVCMutexRelease(a0);
-  } 
+  } else if (code == 23) {
+    status = RVCChangeVideoMode(a0);
+  } else if (code == 24) {
+    status = RVCSetVideoUpcall(p0, p1);
+  } else if (code == 25) {
+    status = RVCGraphicCreate(a0, p1);
+  } else if (code == 26) {
+    status = RVCGraphicDelete(a0);
+  } else if (code == 27) {
+    status = RVCGraphicActivate(a0, p1, p2, a3);
+  } else if (code == 28) {
+    status = RVCGraphicDeactivate(a0);
+  } else if (code == 29) {
+    status = RVCGraphicDraw(a0, p1, p2, p3, a4);
+  } else if (code == 30) {
+    status = RVCPaletteCreate(p0);
+  } else if (code == 31) {
+    status = RVCPaletteDelete(a0);
+  } else if (code == 32) {
+    status = RVCPaletteUpdate(a0, p1, a2, a3);
+  }
+
   return status;
 }
-
-
-/* 
+/*
 Pallette collection of colors (256 values) which is 32 bits ARGB
 And each pixel is a value from the pallette
 
@@ -113,7 +133,7 @@ We set one bit to change mode
 Last address in the video controller section
 BLock it until the mode changes
 
-Upcall- Get a call back once the create and activate 
+Upcall- Get a call back once the create and activate
 Once per interrupt once stuff is completed
 Above high priority
 Upcall has thread id invalid
@@ -126,7 +146,7 @@ Activate-  Upper left corner can be negative to be offscreen
 
 Draw- Draws the pixels
 
-Pallette create- allocates the 245B 
+Pallette create- allocates the 245B
 Data structure to track which graphics are currently using
 
 Update- updates the colors
@@ -136,7 +156,7 @@ Extra credit
 support for 8 pallettes
 track dirty buffers- between activation and draw did you update the buffer
 Use dma to move data around.
-2 dma channels we could use 
+2 dma channels we could use
 32 bits per cycle
 ld and store take 2 cycles
  */
