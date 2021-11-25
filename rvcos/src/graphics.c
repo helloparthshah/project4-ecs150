@@ -35,6 +35,48 @@ typedef struct {
   uint32_t DReserved : 24;
 } SVideoControllerMode, *SVideoControllerModeRef;
 
+volatile uint8_t *BackgroundData[5];
+volatile uint8_t *LargeSpriteData[64];
+volatile uint8_t *SmallSpriteData[128];
+
+volatile SColor *BackgroundPalettes[4];
+volatile SColor *SpritePalettes[4];
+
+volatile SBackgroundControl *BackgroundControls =
+    (volatile SBackgroundControl *)0x500FF100;
+volatile SLargeSpriteControl *LargeSpriteControls =
+    (volatile SLargeSpriteControl *)0x500FF114;
+volatile SSmallSpriteControl *SmallSpriteControls =
+    (volatile SSmallSpriteControl *)0x500FF214;
+volatile SVideoControllerMode *ModeControl =
+    (volatile SVideoControllerMode *)0x500FF414;
+
+extern SColor RVCOPaletteDefaultColors[];
+
+void InitPointers(void) {
+  for (int Index = 0; Index < 4; Index++) {
+    BackgroundPalettes[Index] =
+        (volatile SColor *)(0x500FC000 + 256 * sizeof(SColor) * Index);
+    SpritePalettes[Index] =
+        (volatile SColor *)(0x500FD000 + 256 * sizeof(SColor) * Index);
+  }
+  for (int Index = 0; Index < 5; Index++) {
+    BackgroundData[Index] =
+        (volatile uint8_t *)(0x50000000 + 512 * 288 * Index);
+  }
+  for (int Index = 0; Index < 64; Index++) {
+    LargeSpriteData[Index] = (volatile uint8_t *)(0x500B4000 + 64 * 64 * Index);
+  }
+  for (int Index = 0; Index < 128; Index++) {
+    SmallSpriteData[Index] = (volatile uint8_t *)(0x500F4000 + 16 * 16 * Index);
+  }
+
+  memcpy((void *)BackgroundPalettes[0], RVCOPaletteDefaultColors,
+         256 * sizeof(SColor));
+  memcpy((void *)SpritePalettes[0], RVCOPaletteDefaultColors,
+         256 * sizeof(SColor));
+}
+
 TStatus RVCChangeVideoMode(TVideoMode mode) {
   //
   return RVCOS_STATUS_SUCCESS;
