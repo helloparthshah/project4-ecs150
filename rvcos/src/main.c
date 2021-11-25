@@ -80,7 +80,7 @@ uint32_t c_syscall_handler(uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3,
     status = RVCMutexAcquire(a0, a1);
   } else if (code == 22) {
     status = RVCMutexRelease(a0);
-  }
+  } 
   return status;
 }
 

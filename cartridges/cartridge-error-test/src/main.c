@@ -44,7 +44,7 @@ TThreadReturn Thread(void *param){
 }
 
 int main() {
-        TThreadID OtherThreadID, ThisThreadID, BadThreadID, MutexOwner;
+    TThreadID OtherThreadID, ThisThreadID, BadThreadID, MutexOwner;
     TThreadState RVCState;
     TMutexID BadMutexID;
     TMemoryPoolID MemoryPool1;
@@ -56,7 +56,7 @@ int main() {
     
     
     WriteString("Main testing RVCMemoryPoolQuery.\n");
-    if(RVCOS_STATUS_ERROR_INVALID_PARAMETER != RVCMemoryPoolQuery(RVCOS_MEMORY_POOL_ID_INVALID, &SystemPoolSize)){
+    if(RVCOS_STATUS_ERROR_INVALID_ID != RVCMemoryPoolQuery(RVCOS_MEMORY_POOL_ID_INVALID, &SystemPoolSize)){
         WriteString("MemoryPoolQuery doesn't handle bad memoryid.\n");    
         return 0;
     }
@@ -78,7 +78,7 @@ int main() {
         WriteString("MemoryPoolAllocate doesn't handle NULL pointer.\n");    
         return 0;
     }
-    if(RVCOS_STATUS_ERROR_INVALID_PARAMETER != RVCMemoryPoolAllocate(RVCOS_MEMORY_POOL_ID_INVALID, 64, (void **)&MemoryBase1)){
+    if(RVCOS_STATUS_ERROR_INVALID_ID != RVCMemoryPoolAllocate(RVCOS_MEMORY_POOL_ID_INVALID, 64, (void **)&MemoryBase1)){
         WriteString("MemoryPoolAllocate doesn't handle bad memoryid.\n");    
         return 0;
     }
@@ -153,13 +153,13 @@ int main() {
         WriteString("MemoryPoolDeallocate doesn't handle zero size.\n");    
         return 0;
     }
-    if(RVCOS_STATUS_ERROR_INVALID_PARAMETER != RVCMemoryPoolDeallocate(RVCOS_MEMORY_POOL_ID_INVALID, LocalAllocation)){
+    if(RVCOS_STATUS_ERROR_INVALID_ID != RVCMemoryPoolDeallocate(RVCOS_MEMORY_POOL_ID_INVALID, LocalAllocation)){
         WriteString("MemoryPoolDeallocate doesn't handle NULL memoryid.\n");    
         return 0;
     }
     WriteString("Main RVCMemoryPoolDeallocate appears OK.\n");
     WriteString("Main testing RVCMemoryPoolDelete.\n");
-    if(RVCOS_STATUS_ERROR_INVALID_PARAMETER != RVCMemoryPoolDelete(RVCOS_MEMORY_POOL_ID_INVALID)){
+    if(RVCOS_STATUS_ERROR_INVALID_ID != RVCMemoryPoolDelete(RVCOS_MEMORY_POOL_ID_INVALID)){
         WriteString("MemoryPoolDelete doesn't handle bad memoryid.\n");    
         return 0;
     }
@@ -176,11 +176,11 @@ int main() {
         return 0;
     }
     WriteString("Main RVCMemoryPoolDelete appears OK.\n");
-    if(RVCOS_STATUS_ERROR_INVALID_PARAMETER != RVCMemoryPoolAllocate(MemoryPool1, 32, (void **)&LocalAllocation)){
+    if(RVCOS_STATUS_ERROR_INVALID_ID != RVCMemoryPoolAllocate(MemoryPool1, 32, (void **)&LocalAllocation)){
         WriteString("MemoryPoolAllocate doesn't handle bad memoryid.\n");    
         return 0;
     }
-    if(RVCOS_STATUS_ERROR_INVALID_PARAMETER != RVCMemoryPoolQuery(MemoryPool1, &SystemPoolSize)){
+    if(RVCOS_STATUS_ERROR_INVALID_ID != RVCMemoryPoolQuery(MemoryPool1, &SystemPoolSize)){
         WriteString("MemoryPoolQuery doesn't handle bad memoryid.\n");    
         return 0;
     }

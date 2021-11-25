@@ -11,3 +11,5 @@
 11. cartridge-mutex                 (creates multiple threads and mutexes)
 12. cartridge-memory                (tests memory pools)
 13. cartridge-error-test            (tests most error codes for the system calls)
+13. cartridge-controller-graphics   (similar to cartridge-controller-input2, but with graphics)
+13. cartridge-game                  (more complicated graphical game)

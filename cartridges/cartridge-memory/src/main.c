@@ -62,7 +62,7 @@ int main() {
     }
     Groups = 256 == AvailableSpace ? 4 : 2;
     WriteString("Done\nAllocating spaces: ");
-    for(Index = 0; Index < 4; Index++){
+    for(Index = 0; Index < Groups; Index++){
         if(RVCOS_STATUS_SUCCESS != RVCMemoryPoolAllocate(MemoryPoolID, 64, (void **)&Pointers[Index])){
             char TempStr[] = "Failed to allocate space 0\n";
             TempStr[25] = '0' + Index;
@@ -71,13 +71,13 @@ int main() {
         }
     }
     WriteString("Done\nAssigning values: ");    
-    for(Index = 0; Index < 4; Index++){
+    for(Index = 0; Index < Groups; Index++){
         for(Inner = 0; Inner < 64 / sizeof(int); Inner++){
             Pointers[Index][Inner] = Index * (64 / sizeof(int)) + Inner;   
         }
     }
     WriteString("Done\nDeallocating spaces: ");   
-    for(Index = 0; Index < 4; Index++){
+    for(Index = 0; Index < Groups; Index++){
         if(RVCOS_STATUS_SUCCESS != RVCMemoryPoolDeallocate(MemoryPoolID, Pointers[Index])){
             char TempStr[] = "Failed to deallocate space 0\n";
             TempStr[27] = '0' + Index;
