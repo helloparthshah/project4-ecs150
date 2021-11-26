@@ -74,7 +74,6 @@ void InitGraphics(void) {
     SmallSpriteData[Index] = (volatile uint8_t *)(0x500F4000 + 16 * 16 * Index);
   }
 
-  // ModeControl->DMode ^= 1;
   write("Test", 4);
   //  Loading the default palette into position 0
   memcpy((SColor *)BackgroundPalettes[0], RVCOSPaletteDefaultColors,
