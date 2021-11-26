@@ -191,17 +191,19 @@ extern uint8_t _pool_size;
 #define MTIMECMP_LOW (*((volatile uint32_t *)0x40000010))
 #define MTIMECMP_HIGH (*((volatile uint32_t *)0x40000014))
 
+extern void InitGraphics(void);
+
 TStatus RVCInitialize(uint32_t *gp) {
   if (gp == NULL)
     return RVCOS_STATUS_ERROR_INVALID_PARAMETER;
-
   // Storing the cartridge gp
   cart_gp = (uint32_t)gp;
   // Resetting the ticks
   ticks = 0;
   // Initializing the system memory pool
   initSystemPool();
-  uint32_t p;
+  // Initializing the graphics pointers
+  InitGraphics();
   // Initializing the ready queue
   ready_queue = pdmalloc();
   threads_sleeping = dmalloc();
@@ -670,7 +672,8 @@ void video_interrupt_handler(void) {
       output_char(tb.buffer, tb.writesize);
       tcb.threads[tb.tid].state = RVCOS_THREAD_STATE_READY;
       push_back_prio(ready_queue, tb.tid);
-      if (tcb.threads[tb.tid].priority > tcb.threads[curr_running].priority) {
+      if (tcb.threads[tb.tid].priority > tcb.threads[curr_running].priority)
+      {
         // push_back_prio(ready_queue, tb.tid);
         scheduler();
       }

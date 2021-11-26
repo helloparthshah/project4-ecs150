@@ -51,9 +51,12 @@ volatile SSmallSpriteControl *SmallSpriteControls =
 volatile SVideoControllerMode *ModeControl =
     (volatile SVideoControllerMode *)0x500FF414;
 
-extern SColor RVCOPaletteDefaultColors[];
+extern SColor RVCOSPaletteDefaultColors[];
 
-void InitPointers(void) {
+extern void write(const TTextCharacter *, uint32_t);
+extern void writei(uint32_t, uint32_t);
+
+void InitGraphics(void) {
   for (int Index = 0; Index < 4; Index++) {
     BackgroundPalettes[Index] =
         (volatile SColor *)(0x500FC000 + 256 * sizeof(SColor) * Index);
@@ -71,14 +74,18 @@ void InitPointers(void) {
     SmallSpriteData[Index] = (volatile uint8_t *)(0x500F4000 + 16 * 16 * Index);
   }
 
-  memcpy((void *)BackgroundPalettes[0], RVCOPaletteDefaultColors,
+  // ModeControl->DMode ^= 1;
+  write("Test", 4);
+  //  Loading the default palette into position 0
+  memcpy((SColor *)BackgroundPalettes[0], RVCOSPaletteDefaultColors,
          256 * sizeof(SColor));
-  memcpy((void *)SpritePalettes[0], RVCOPaletteDefaultColors,
+  memcpy((SColor *)SpritePalettes[0], RVCOSPaletteDefaultColors,
          256 * sizeof(SColor));
+  writei(BackgroundPalettes[0][1].DAlpha, 5);
 }
 
 TStatus RVCChangeVideoMode(TVideoMode mode) {
-  //
+  ModeControl->DMode ^= 1;
   return RVCOS_STATUS_SUCCESS;
 }
 
