@@ -3,16 +3,13 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+void writei(uint32_t, uint32_t);
+
 Deque *dmalloc() {
   // Allocating the size of the Deque
   // Deque *d = (Deque *)malloc(sizeof(Deque));
   Deque *d;
-  // TMemoryPoolIDRef p = malloc(sizeof(TMemoryPoolID));
-  // uint32_t p = 0;
-  // RVCMemoryPoolCreate(d, sizeof(Deque), &p);
   RVCMemoryAllocate(sizeof(Deque), (void **)&d);
-  // d->mPoolID = p;
-  // free(p);
   if (d != NULL)
     d->head = d->tail = NULL;
   return d;
@@ -23,7 +20,6 @@ PrioDeque *pdmalloc() {
   // uint32_t p = 0;
   // RVCMemoryPoolCreate(pd, sizeof(PrioDeque), &p);
   RVCMemoryAllocate(sizeof(PrioDeque), (void **)&pd);
-  // pd->mPoolID = p;
   pd->high = dmalloc();
   pd->norm = dmalloc();
   pd->low = dmalloc();
@@ -128,7 +124,7 @@ void push_back(volatile Deque *d, TThreadID v) {
 
 int isEmpty(volatile Deque *d) {
   // Checking if head is null
-  if (d->head == NULL)
+  if (d == NULL || d->head == NULL)
     return 1;
   return 0;
 }
@@ -198,8 +194,6 @@ TThreadID end(volatile Deque *d) {
   // Return tail
   return d->tail->val;
 }
-
-void writei(uint32_t, uint32_t);
 
 // Debug function to print the deque
 void print(volatile Deque *d, uint32_t line) {

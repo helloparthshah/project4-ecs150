@@ -158,9 +158,9 @@ TStatus RVCMemoryPoolAllocate(TMemoryPoolID memory, TMemorySize size,
   if (memory >= memory_pool_array.used || size == 0 || pointer == NULL) {
     return RVCOS_STATUS_ERROR_INVALID_PARAMETER;
   }
-  if (size + memory_pool_array.pools[memory].Used >
+  /* if (size + memory_pool_array.pools[memory].Used >
       memory_pool_array.pools[memory].DSize)
-    return RVCOS_STATUS_ERROR_INSUFFICIENT_RESOURCES;
+    return RVCOS_STATUS_ERROR_INSUFFICIENT_RESOURCES; */
 
   memory_pool_array.pools[memory].Used += size;
 

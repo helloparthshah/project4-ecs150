@@ -672,8 +672,7 @@ void video_interrupt_handler(void) {
       output_char(tb.buffer, tb.writesize);
       tcb.threads[tb.tid].state = RVCOS_THREAD_STATE_READY;
       push_back_prio(ready_queue, tb.tid);
-      if (tcb.threads[tb.tid].priority > tcb.threads[curr_running].priority)
-      {
+      if (tcb.threads[tb.tid].priority > tcb.threads[curr_running].priority) {
         // push_back_prio(ready_queue, tb.tid);
         scheduler();
       }
@@ -683,6 +682,7 @@ void video_interrupt_handler(void) {
 }
 
 TStatus RVCWriteText(const TTextCharacter *buffer, TMemorySize writesize) {
+
   if (buffer == NULL)
     return RVCOS_STATUS_ERROR_INVALID_PARAMETER;
   // Pushing to text_buffer_queue
