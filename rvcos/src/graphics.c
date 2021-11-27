@@ -141,17 +141,17 @@ TStatus RVCGraphicDelete(TGraphicID gid) { //
 }
 
 TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
-                           SGraphicDimensionsRef dim, TPaletteID pid) { //
+                           SGraphicDimensionsRef dim, TPaletteID pid) {
   if (gid < 4) {
-    BackgroundControls[gid].DXOffset += pos->DXPosition;
-    BackgroundControls[gid].DYOffset += pos->DYPosition;
+    BackgroundControls[gid].DXOffset = 512+ pos->DXPosition;
+    BackgroundControls[gid].DYOffset = 288+ pos->DYPosition;
     BackgroundControls[gid].DZ = pos->DZPosition;
   } else if (gid < 64 + 4) {
-    LargeSpriteControls[gid - 4].DXOffset += pos->DXPosition;
-    LargeSpriteControls[gid - 4].DYOffset += pos->DYPosition;
+    LargeSpriteControls[gid - 4].DXOffset = 64 + pos->DXPosition;
+    LargeSpriteControls[gid - 4].DYOffset = 64 + pos->DYPosition;
   } else {
-    SmallSpriteControls[gid - 68].DXOffset += pos->DXPosition;
-    SmallSpriteControls[gid - 68].DYOffset += pos->DYPosition;
+    SmallSpriteControls[gid - 68].DXOffset = 16 + pos->DXPosition;
+    SmallSpriteControls[gid - 68].DYOffset = 16 + pos->DYPosition;
     SmallSpriteControls[gid - 68].DZ = pos->DZPosition;
   }
   return RVCOS_STATUS_SUCCESS;
@@ -166,20 +166,11 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        uint32_t srcwidth) {
   writei(pos->DXPosition, 20);
   if (gid < 4) {
-    BackgroundControls[gid].DXOffset = 512 + pos->DXPosition;
-    BackgroundControls[gid].DYOffset = 288 + pos->DYPosition;
-    BackgroundControls[gid].DZ = pos->DZPosition;
-    // BackgroundControls->DPalette = *src;
-    memcpy((void *)BackgroundData[gid], src, srcwidth);
+    memcpy((void *)BackgroundData[gid]+srcwidth*pos->DYPosition+pos->DXPosition, src, srcwidth);
   } else if (gid < 68) {
-    // LargeSpriteControls[gid - 4].DXOffset = dim->DWidth + pos->DXPosition;
-    // LargeSpriteControls[gid - 4].DYOffset = dim->DHeight + pos->DYPosition;
-    memcpy((void *)LargeSpriteData[gid - 4], src, dim->DWidth * dim->DHeight);
+    memcpy((void *)LargeSpriteData[gid - 4]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
   } else {
-    SmallSpriteControls[gid - 68].DXOffset = dim->DWidth + pos->DXPosition;
-    SmallSpriteControls[gid - 68].DYOffset = dim->DHeight + pos->DYPosition;
-    SmallSpriteControls[gid - 68].DZ = pos->DZPosition;
-    memcpy((void *)SmallSpriteData[gid - 68], src, dim->DWidth * dim->DHeight);
+    memcpy((void *)SmallSpriteData[gid - 68]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
   }
   return RVCOS_STATUS_SUCCESS;
 }

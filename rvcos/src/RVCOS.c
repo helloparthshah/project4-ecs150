@@ -672,12 +672,12 @@ void video_interrupt_handler(void) {
       output_char(tb.buffer, tb.writesize);
       tcb.threads[tb.tid].state = RVCOS_THREAD_STATE_READY;
       push_back_prio(ready_queue, tb.tid);
-      if (tcb.threads[tb.tid].priority > tcb.threads[curr_running].priority) {
-        // push_back_prio(ready_queue, tb.tid);
-        scheduler();
-      }
+      // if (tcb.threads[tb.tid].priority > tcb.threads[curr_running].priority) {
+      //   // push_back_prio(ready_queue, tb.tid);
+      //   scheduler();
+      // }
     }
-    // scheduler();
+    scheduler();
   }
 }
 
