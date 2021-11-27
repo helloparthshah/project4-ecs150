@@ -106,30 +106,32 @@ TStatus RVCSetVideoUpcall(TThreadEntry upcall, void *param) { //
   return RVCOS_STATUS_SUCCESS;
 }
 
-int nGraphics = 0;
+int nBg = 0;
+int nLs = 0;
+int nSs = 0;
 
 TStatus RVCGraphicCreate(TGraphicType type, TGraphicIDRef gidref) {
   if (type == RVCOS_GRAPHIC_TYPE_FULL) {
-    BackgroundControls[nGraphics].DPalette = 0;
-    BackgroundControls[nGraphics].DXOffset = 512;
-    BackgroundControls[nGraphics].DYOffset = 288;
-    BackgroundControls[nGraphics].DZ = 0;
-    *gidref = nGraphics++;
+    BackgroundControls[nBg].DPalette = 0;
+    BackgroundControls[nBg].DXOffset = 512;
+    BackgroundControls[nBg].DYOffset = 288;
+    BackgroundControls[nBg].DZ = 0;
+    *gidref = nBg++;
   } else if (type == RVCOS_GRAPHIC_TYPE_LARGE) {
-    LargeSpriteControls[nGraphics].DPalette = 0;
-    LargeSpriteControls[nGraphics].DXOffset = 64;
-    LargeSpriteControls[nGraphics].DYOffset = 64;
-    LargeSpriteControls[nGraphics].DWidth = 31;
-    LargeSpriteControls[nGraphics].DHeight = 31;
-    *gidref = nGraphics++ + 4;
+    LargeSpriteControls[nLs].DPalette = 0;
+    LargeSpriteControls[nLs].DXOffset = 64;
+    LargeSpriteControls[nLs].DYOffset = 64;
+    LargeSpriteControls[nLs].DWidth = 31;
+    LargeSpriteControls[nLs].DHeight = 31;
+    *gidref = nLs++ + 4;
   } else if (type == RVCOS_GRAPHIC_TYPE_SMALL) {
-    SmallSpriteControls[nGraphics].DPalette = 0;
-    SmallSpriteControls[nGraphics].DXOffset = 16;
-    SmallSpriteControls[nGraphics].DYOffset = 16;
-    SmallSpriteControls[nGraphics].DZ = 7;
-    SmallSpriteControls[nGraphics].DWidth = 15;
-    SmallSpriteControls[nGraphics].DHeight = 15;
-    *gidref = nGraphics++ + 64 + 4;
+    SmallSpriteControls[nSs].DPalette = 0;
+    SmallSpriteControls[nSs].DXOffset = 16;
+    SmallSpriteControls[nSs].DYOffset = 16;
+    SmallSpriteControls[nSs].DZ = 7;
+    SmallSpriteControls[nSs].DWidth = 15;
+    SmallSpriteControls[nSs].DHeight = 15;
+    *gidref = nSs++ + 64 + 4;
   }
   return RVCOS_STATUS_SUCCESS;
 }
