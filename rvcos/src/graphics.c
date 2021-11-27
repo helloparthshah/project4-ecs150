@@ -164,7 +164,7 @@ TStatus RVCGraphicDeactivate(TGraphicID gid) { //
 TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        SGraphicDimensionsRef dim, TPaletteIndexRef src,
                        uint32_t srcwidth) {
-  writei(srcwidth, 20);
+  writei(pos->DXPosition, 20);
   if (gid < 4) {
     BackgroundControls[gid].DXOffset = 512 + pos->DXPosition;
     BackgroundControls[gid].DYOffset = 288 + pos->DYPosition;
@@ -172,8 +172,8 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
     // BackgroundControls->DPalette = *src;
     memcpy((void *)BackgroundData[gid], src, srcwidth);
   } else if (gid < 68) {
-    LargeSpriteControls[gid - 4].DXOffset = dim->DWidth + pos->DXPosition;
-    LargeSpriteControls[gid - 4].DYOffset += dim->DHeight + pos->DYPosition;
+    // LargeSpriteControls[gid - 4].DXOffset = dim->DWidth + pos->DXPosition;
+    // LargeSpriteControls[gid - 4].DYOffset = dim->DHeight + pos->DYPosition;
     memcpy((void *)LargeSpriteData[gid - 4], src, dim->DWidth * dim->DHeight);
   } else {
     SmallSpriteControls[gid - 68].DXOffset = dim->DWidth + pos->DXPosition;
