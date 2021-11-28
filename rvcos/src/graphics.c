@@ -219,7 +219,7 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
   // overlap(pos, dim);
   if (gid < 4) {
     for(int i=0;i<dim->DHeight;i++){
-      memcpy((void*)BackgroundDataBuffer[gid]+pos->DXPosition+pos->DYPosition*512 + i*512, src+i*srcwidth, 512);
+      memcpy((void*)BackgroundDataBuffer[gid]+pos->DXPosition+pos->DYPosition*512 + i*512, src+i*srcwidth, srcwidth);
     }
     // memcpy((void *)BackgroundDataBuffer[gid], src, srcwidth);
   } else if (gid < 68) {
