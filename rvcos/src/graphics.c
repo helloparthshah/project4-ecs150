@@ -35,6 +35,10 @@ typedef struct {
   uint32_t DReserved : 24;
 } SVideoControllerMode, *SVideoControllerModeRef;
 
+volatile uint8_t *OSBackgroundBuffer[5];
+volatile uint8_t *OSLargeSpriteBuffer[64];
+volatile uint8_t *OSSmallSpriteBuffer[128];
+
 volatile uint8_t *BackgroundData[5];
 volatile uint8_t *LargeSpriteData[64];
 volatile uint8_t *SmallSpriteData[128];
@@ -83,6 +87,7 @@ void InitGraphics(void) {
   for (int Index = 0; Index < 128; Index++) {
     SmallSpriteData[Index] = (volatile uint8_t *)(0x500F4000 + 16 * 16 * Index);
   }
+
   //  Loading the default palette into position 0
   BackgroundPalettes.used = 0;
   SpritePalettes.used = 0;
@@ -121,6 +126,7 @@ TStatus RVCGraphicCreate(TGraphicType type, TGraphicIDRef gidref) {
     BackgroundControls[nBg].DXOffset = 512;
     BackgroundControls[nBg].DYOffset = 288;
     BackgroundControls[nBg].DZ = 0;
+  RVCMemoryAllocate(512 * 288 * sizeof(uint8_t), (void **)&OSBackgroundBuffer[nBg]);
     *gidref = nBg++;
   } else if (type == RVCOS_GRAPHIC_TYPE_LARGE) {
     LargeSpriteControls[nLs].DPalette = 0;
@@ -128,6 +134,7 @@ TStatus RVCGraphicCreate(TGraphicType type, TGraphicIDRef gidref) {
     LargeSpriteControls[nLs].DYOffset = 64;
     LargeSpriteControls[nLs].DWidth = 31;
     LargeSpriteControls[nLs].DHeight = 31;
+  RVCMemoryAllocate(64 * 64 * sizeof(uint8_t), (void **)&OSLargeSpriteBuffer[nLs]);
     *gidref = nLs++ + 4;
   } else if (type == RVCOS_GRAPHIC_TYPE_SMALL) {
     SmallSpriteControls[nSs].DPalette = 0;
@@ -136,6 +143,7 @@ TStatus RVCGraphicCreate(TGraphicType type, TGraphicIDRef gidref) {
     SmallSpriteControls[nSs].DZ = 7;
     SmallSpriteControls[nSs].DWidth = 15;
     SmallSpriteControls[nSs].DHeight = 15;
+  RVCMemoryAllocate(16 * 16 * sizeof(uint8_t), (void **)&OSSmallSpriteBuffer[nSs]);
     *gidref = nSs++ + 64 + 4;
   }
   return RVCOS_STATUS_SUCCESS;
@@ -151,12 +159,19 @@ TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
     BackgroundControls[gid].DXOffset = 512 + pos->DXPosition;
     BackgroundControls[gid].DYOffset = 288 + pos->DYPosition;
     BackgroundControls[gid].DZ = pos->DZPosition;
+    BackgroundControls[gid].DPalette = pid;
   } else if (gid < 64 + 4) {
     LargeSpriteControls[gid - 4].DXOffset = 64 + pos->DXPosition;
     LargeSpriteControls[gid - 4].DYOffset = 64 + pos->DYPosition;
+    LargeSpriteControls[gid - 4].DWidth = dim->DWidth;
+    LargeSpriteControls[gid - 4].DHeight = dim->DHeight;
+    LargeSpriteControls[gid - 4].DPalette = pid;
   } else if (gid < 128 + 64 + 4) {
     SmallSpriteControls[gid - 68].DXOffset = 16 + pos->DXPosition;
     SmallSpriteControls[gid - 68].DYOffset = 16 + pos->DYPosition;
+    SmallSpriteControls[gid - 68].DWidth = dim->DWidth;
+    SmallSpriteControls[gid - 68].DHeight = dim->DHeight;
+    SmallSpriteControls[gid - 68].DPalette = pid;
     SmallSpriteControls[gid - 68].DZ = pos->DZPosition;
   }
   return RVCOS_STATUS_SUCCESS;
