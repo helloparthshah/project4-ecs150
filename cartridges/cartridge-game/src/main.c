@@ -72,6 +72,7 @@ int main() {
     WriteString("Done\nStarting");
     RenderHero(&HeroState,HeroFrames,MainPalette);
     RVCSetVideoUpcall(VideoUpcall,NULL);
+    RVCChangeVideoMode(RVCOS_VIDEO_MODE_GRAPHICS);
     
     while(1){
         FrameDelay();
