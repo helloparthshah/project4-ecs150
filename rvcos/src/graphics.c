@@ -196,40 +196,44 @@ TStatus RVCGraphicDeactivate(TGraphicID gid) { //
   return RVCOS_STATUS_SUCCESS;
 }
 
-void overlap(SGraphicPositionRef pos, SGraphicDimensionsRef dim) {
-  if (pos->DXPosition + dim->DWidth > 512) {
-    dim->DWidth = 512 - pos->DXPosition;
+void overlap(SGraphicPositionRef pos, SGraphicDimensionsRef dim, uint32_t gid) {
+  int w=0,h=0;
+  // check for overlap with the graphics
+  if(gid<4){
+    w=512;
+    h=288;
+  }else if(gid<64+4){
+    w=64;
+    h=64;
+  }else if(gid<128+64+4){
+    w=16;
+    h=16;
   }
-  if (pos->DYPosition + dim->DHeight > 288) {
-    dim->DHeight = 288 - pos->DYPosition;
-  }
-  if(pos->DXPosition < 0) {
-    dim->DWidth -= pos->DXPosition;
-    pos->DXPosition = 0;
-  }
-  if(pos->DYPosition < 0) {
-    dim->DHeight -= pos->DYPosition;
-    pos->DYPosition = 0;
-  }
+
+    if(pos->DXPosition+dim->DWidth>w){
+      pos->DXPosition=w-dim->DWidth;
+    }
+    if(pos->DYPosition+dim->DHeight>h){
+      pos->DYPosition=h-dim->DHeight;
+    }
 }
 
 TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        SGraphicDimensionsRef dim, TPaletteIndexRef src,
                        uint32_t srcwidth) {
-  // overlap(pos, dim);
+  // overlap(pos, dim, gid);
   if (gid < 4) {
     for(int i=0;i<dim->DHeight;i++){
-      memcpy((void*)BackgroundDataBuffer[gid]+pos->DXPosition+pos->DYPosition*512 + i*512, src+i*srcwidth, srcwidth);
+      memcpy((void*)BackgroundDataBuffer[gid]+pos->DXPosition+pos->DYPosition*512 + i*512, src+i*srcwidth, dim->DWidth);
     }
-    // memcpy((void *)BackgroundDataBuffer[gid], src, srcwidth);
   } else if (gid < 68) {
     for(int i=0;i<dim->DHeight;i++){
-      memcpy((void*)LargeSpriteDataBuffer[gid - 4]+pos->DXPosition+pos->DYPosition*dim->DWidth + i*dim->DWidth,
-             src+srcwidth*i, srcwidth);
+      memcpy((void*)LargeSpriteDataBuffer[gid - 4]+pos->DXPosition+(pos->DYPosition+i)*64,
+             src+srcwidth*i, dim->DWidth);
     }
   } else if(gid < 128+64 + 4) {
     for(int i=0;i<dim->DWidth;i++){
-      memcpy((void*)SmallSpriteDataBuffer[gid - 68] +pos->DXPosition+pos->DYPosition*dim->DWidth + i*dim->DWidth, src+srcwidth*i, srcwidth);
+      memcpy((void*)SmallSpriteDataBuffer[gid - 68] +pos->DXPosition+pos->DXPosition+(pos->DYPosition+i)*16, src+srcwidth*i, dim->DWidth);
     }
   }
   return RVCOS_STATUS_SUCCESS;
