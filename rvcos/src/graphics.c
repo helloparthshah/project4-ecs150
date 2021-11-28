@@ -171,15 +171,15 @@ TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
 
 TStatus RVCGraphicDeactivate(TGraphicID gid) { //
   if (gid < 4) {
-    BackgroundControls[gid].DXOffset = 512;
-    BackgroundControls[gid].DYOffset = 288;
+    BackgroundControls[gid].DXOffset = 0;
+    BackgroundControls[gid].DYOffset = 0;
     BackgroundControls[gid].DZ = 0;
   } else if (gid < 64 + 4) {
-    LargeSpriteControls[gid - 4].DXOffset = 64;
-    LargeSpriteControls[gid - 4].DYOffset = 64;
+    LargeSpriteControls[gid - 4].DXOffset = 0;
+    LargeSpriteControls[gid - 4].DYOffset = 0;
   } else if (gid < 128 + 64 + 4) {
-    SmallSpriteControls[gid - 68].DXOffset = 16;
-    SmallSpriteControls[gid - 68].DYOffset = 16;
+    SmallSpriteControls[gid - 68].DXOffset = 0;
+    SmallSpriteControls[gid - 68].DYOffset = 0;
     SmallSpriteControls[gid - 68].DZ = 7;
   }
   return RVCOS_STATUS_SUCCESS;
@@ -209,7 +209,7 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
   overlap(pos, dim);
   if (gid < 4) {
     for(int i=0;i<288;i++){
-      // if(pos->DXPosition+srcwidth<512 && pos->DYPosition+i<288)
+      if(pos->DXPosition+srcwidth<512 && pos->DYPosition+i<288)
       memcpy(BackgroundData[gid] + i*512,
              src+srcwidth*i, 512);
     }
