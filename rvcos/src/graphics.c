@@ -217,12 +217,12 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        uint32_t srcwidth) {
   overlap(pos, dim);
   if (gid < 4) {
-    for(int i=0;i<288;i++){
+    /* for(int i=0;i<288;i++){
       if(pos->DXPosition+srcwidth<512 && pos->DYPosition+i<288)
       memcpy(BackgroundDataBuffer[gid] + i*512,
              src+srcwidth*i, 512);
-    }
-    // memcpy((void *)BackgroundData[gid], src, 512*288);
+    } */
+    memcpy((void *)BackgroundData[gid], src, srcwidth);
   } else if (gid < 68) {
     for(int i=0;i<dim->DHeight;i++){
       memcpy(LargeSpriteDataBuffer[gid - 4] + i*dim->DWidth,
