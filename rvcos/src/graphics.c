@@ -167,7 +167,7 @@ TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
     LargeSpriteControls[gid - 4].DWidth = dim->DWidth-33;
     LargeSpriteControls[gid - 4].DHeight = dim->DHeight-33;
     LargeSpriteControls[gid - 4].DPalette = pid;
-    memcpy((void*)LargeSpriteData[gid - 4], (void*)LargeSpriteDataBuffer[gid - 4], 64*64);
+    memcpy((void*)LargeSpriteData[gid - 4], (void*)LargeSpriteDataBuffer[gid - 4], dim->DWidth*dim->DHeight);
   } else if (gid < 128 + 64 + 4) {
     SmallSpriteControls[gid - 68].DXOffset = 16 + pos->DXPosition;
     SmallSpriteControls[gid - 68].DYOffset = 16 + pos->DYPosition;
@@ -175,7 +175,7 @@ TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
     SmallSpriteControls[gid - 68].DHeight = dim->DHeight-1;
     SmallSpriteControls[gid - 68].DPalette = pid;
     SmallSpriteControls[gid - 68].DZ = pos->DZPosition;
-    memcpy((void*)SmallSpriteData[gid - 68], (void*)SmallSpriteDataBuffer[gid - 68], 16*16);
+    memcpy((void*)SmallSpriteData[gid - 68], (void*)SmallSpriteDataBuffer[gid - 68], dim->DWidth*dim->DHeight);
   }
   return RVCOS_STATUS_SUCCESS;
 }
@@ -216,24 +216,21 @@ void overlap(SGraphicPositionRef pos, SGraphicDimensionsRef dim) {
 TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        SGraphicDimensionsRef dim, TPaletteIndexRef src,
                        uint32_t srcwidth) {
-  overlap(pos, dim);
+  // overlap(pos, dim);
   if (gid < 4) {
-    /* for(int i=0;i<288;i++){
-      // if(src+srcwidth*i+dim->DWidth!=NULL)
-      memcpy((void*)BackgroundDataBuffer[gid] + i*512, src+i*srcwidth, 512);
-    } */
-    memcpy((void *)BackgroundDataBuffer[gid], src, srcwidth);
+    for(int i=0;i<dim->DHeight;i++){
+      memcpy((void*)BackgroundDataBuffer[gid]+pos->DXPosition+pos->DYPosition*512 + i*512, src+i*srcwidth, 512);
+    }
+    // memcpy((void *)BackgroundDataBuffer[gid], src, srcwidth);
   } else if (gid < 68) {
     for(int i=0;i<dim->DHeight;i++){
-      memcpy((void*)LargeSpriteDataBuffer[gid - 4] + i*dim->DWidth,
+      memcpy((void*)LargeSpriteDataBuffer[gid - 4]+pos->DXPosition+pos->DYPosition*dim->DWidth + i*dim->DWidth,
              src+srcwidth*i, dim->DWidth);
     }
-    // memcpy((void *)LargeSpriteData[gid - 4]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
   } else if(gid < 128+64 + 4) {
     for(int i=0;i<dim->DWidth;i++){
-      memcpy((void*)SmallSpriteDataBuffer[gid - 68] + i*dim->DWidth, src+srcwidth*i, dim->DWidth);
+      memcpy((void*)SmallSpriteDataBuffer[gid - 68] +pos->DXPosition+pos->DYPosition*dim->DWidth + i*dim->DWidth, src+srcwidth*i, dim->DWidth);
     }
-    // memcpy((void *)SmallSpriteData[gid - 68]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
   }
   return RVCOS_STATUS_SUCCESS;
 }
