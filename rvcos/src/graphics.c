@@ -159,14 +159,14 @@ TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
     BackgroundControls[gid].DYOffset = 288 + pos->DYPosition;
     BackgroundControls[gid].DZ = pos->DZPosition;
     BackgroundControls[gid].DPalette = pid;
-    memcpy((void*)BackgroundData[gid], (void*)BackgroundDataBuffer[gid], 512 * 288);
+    memcpy((void*)BackgroundData[gid], (void*)BackgroundDataBuffer[gid], 512*288);
   } else if (gid < 64 + 4) {
     LargeSpriteControls[gid - 4].DXOffset = 64 + pos->DXPosition;
     LargeSpriteControls[gid - 4].DYOffset = 64 + pos->DYPosition;
     LargeSpriteControls[gid - 4].DWidth = dim->DWidth-33;
     LargeSpriteControls[gid - 4].DHeight = dim->DHeight-33;
     LargeSpriteControls[gid - 4].DPalette = pid;
-    memcpy((void*)LargeSpriteData[gid - 4], (void*)LargeSpriteDataBuffer[gid - 4], 64 * 64);
+    memcpy((void*)LargeSpriteData[gid - 4], (void*)LargeSpriteDataBuffer[gid - 4], 64*64);
   } else if (gid < 128 + 64 + 4) {
     SmallSpriteControls[gid - 68].DXOffset = 16 + pos->DXPosition;
     SmallSpriteControls[gid - 68].DYOffset = 16 + pos->DYPosition;
@@ -174,7 +174,7 @@ TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
     SmallSpriteControls[gid - 68].DHeight = dim->DHeight-1;
     SmallSpriteControls[gid - 68].DPalette = pid;
     SmallSpriteControls[gid - 68].DZ = pos->DZPosition;
-    memcpy((void*)SmallSpriteData[gid - 68], (void*)SmallSpriteDataBuffer[gid - 68], 16 * 16);
+    memcpy((void*)SmallSpriteData[gid - 68], (void*)SmallSpriteDataBuffer[gid - 68], 16*16);
   }
   return RVCOS_STATUS_SUCCESS;
 }
@@ -220,11 +220,11 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
     dim->DWidth = 512;
     dim->DHeight = 288;
     overlap(pos, dim);
-    for(int i=0;i<dim->DHeight;i++){
-      // if(src+srcwidth*i+dim->DWidth!=NULL)
-      memcpy((void*)BackgroundDataBuffer[gid] + i*dim->DWidth, src+srcwidth*i, dim->DWidth);
-    }
-    // memcpy((void *)BackgroundDataBuffer[gid], src, srcwidth);
+    // for(int i=0;i<dim->DHeight;i++){
+    //   // if(src+srcwidth*i+dim->DWidth!=NULL)
+    //   memcpy((void*)BackgroundDataBuffer[gid] + i*dim->DWidth, src+srcwidth*i, dim->DWidth);
+    // }
+    memcpy((void *)BackgroundDataBuffer[gid], src, srcwidth);
   } else if (gid < 68) {
     for(int i=0;i<dim->DHeight;i++){
       memcpy((void*)LargeSpriteDataBuffer[gid - 4] + i*dim->DWidth,
