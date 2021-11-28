@@ -239,8 +239,8 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
 }
 
 TStatus RVCPaletteCreate(TPaletteIDRef pidref) {
-  *pidref = BackgroundPalettes.used;
-  push_palette(&BackgroundPalettes, RVCOSPaletteDefaultColors);
+  *pidref = SpritePalettes.used;
+  push_palette(&SpritePalettes, RVCOSPaletteDefaultColors);
   return RVCOS_STATUS_SUCCESS;
 }
 
@@ -250,7 +250,7 @@ TStatus RVCPaletteDelete(TPaletteID pid) { //
 
 TStatus RVCPaletteUpdate(TPaletteID pid, SColorRef cols, TPaletteIndex offset,
                          uint32_t count) {
-  memcpy((SColor *)BackgroundPalettes.Palettes[pid], cols + offset,
+  memcpy((SColor *)SpritePalettes.Palettes[pid], cols + offset,
          count * sizeof(SColor));
   return RVCOS_STATUS_SUCCESS;
 }
