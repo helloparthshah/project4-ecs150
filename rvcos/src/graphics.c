@@ -214,7 +214,7 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        SGraphicDimensionsRef dim, TPaletteIndexRef src,
                        uint32_t srcwidth) {
   writei(pos->DXPosition, 20);
-  // overlap(pos, dim);
+  overlap(pos, dim);
   if (gid < 4) {
     for(int i=0;i<288;i++){
       if(pos->DXPosition+srcwidth<512 && pos->DYPosition+i<288)
@@ -239,8 +239,8 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
 }
 
 TStatus RVCPaletteCreate(TPaletteIDRef pidref) {
-  *pidref = SpritePalettes.used;
-  push_palette(&SpritePalettes, RVCOSPaletteDefaultColors);
+  *pidref = BackgroundPalettes.used;
+  push_palette(&BackgroundPalettes, RVCOSPaletteDefaultColors);
   return RVCOS_STATUS_SUCCESS;
 }
 
@@ -250,7 +250,7 @@ TStatus RVCPaletteDelete(TPaletteID pid) { //
 
 TStatus RVCPaletteUpdate(TPaletteID pid, SColorRef cols, TPaletteIndex offset,
                          uint32_t count) {
-  memcpy((SColor *)SpritePalettes.Palettes[pid], cols + offset,
+  memcpy((SColor *)BackgroundPalettes.Palettes[pid], cols + offset,
          count * sizeof(SColor));
   return RVCOS_STATUS_SUCCESS;
 }
