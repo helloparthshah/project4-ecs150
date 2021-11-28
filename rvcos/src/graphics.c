@@ -166,11 +166,22 @@ TStatus RVCGraphicDeactivate(TGraphicID gid) { //
   return RVCOS_STATUS_SUCCESS;
 }
 
+void overlap(SGraphicPositionRef pos, SGraphicDimensionsRef dim) {
+  if (pos->DXPosition + dim->DXDimension > pos2->DXPosition &&
+      pos->DYPosition + dim->DYDimension > pos2->DYPosition &&
+      pos->DXPosition < pos2->DXPosition + dim2->DXDimension &&
+      pos->DYPosition < pos2->DYPosition + dim2->DYDimension) {
+    pos->DXPosition = pos2->DXPosition + dim2->DXDimension;
+    pos->DYPosition = pos2->DYPosition + dim2->DYDimension;
+  }
+}
+
 TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        SGraphicDimensionsRef dim, TPaletteIndexRef src,
                        uint32_t srcwidth) {
   writei(pos->DXPosition, 20);
   if (gid < 4) {
+    
     memcpy((void *)BackgroundData[gid]+srcwidth*pos->DYPosition+pos->DXPosition, src, srcwidth);
   } else if (gid < 68) {
     memcpy((void *)LargeSpriteData[gid - 4]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
