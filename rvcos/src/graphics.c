@@ -102,7 +102,12 @@ TStatus RVCChangeVideoMode(TVideoMode mode) {
   return RVCOS_STATUS_SUCCESS;
 }
 
-TStatus RVCSetVideoUpcall(TThreadEntry upcall, void *param) { //
+extern volatile TUpcallPointer UpcallPointer;
+extern volatile void *UpcallParam;
+
+TStatus RVCSetVideoUpcall(TThreadEntry upcall, void *param) { 
+  UpcallPointer = (TUpcallPointer)upcall;
+  UpcallParam = (void *)param;
   return RVCOS_STATUS_SUCCESS;
 }
 

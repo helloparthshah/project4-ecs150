@@ -5,6 +5,8 @@
 
 void enter_cartridge();
 
+extern volatile uint32_t controller_status;
+
 // Checking if cartridge is inserted
 volatile int isInit = 0;
 
@@ -13,6 +15,7 @@ volatile uint32_t *saved_sp;
 int main() {
   /* char *c = "\x1B[30;40HHello World!";
   RVCWriteText(c, strlen(c)); */
+  saved_sp = &controller_status;
   while (1) {
     if (CARTRIDGE & 0x1 && isInit == 0) {
       isInit = 1;

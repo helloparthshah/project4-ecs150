@@ -29,6 +29,9 @@ typedef struct {
 
 void initSystemPool();
 
+typedef void (*TFunctionPointer)(void);
+typedef void (*TUpcallPointer)(void *param);
+
 typedef uint32_t TMutexID, *TMutexIDRef;
 typedef uint32_t TMutexState, *TMutexStateRef;
 

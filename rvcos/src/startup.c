@@ -87,6 +87,15 @@ extern void dec_tick();
 extern void video_interrupt_handler();
 #define VIP (*((volatile uint32_t *)0x40000004))
 
+volatile uint32_t controller_status = 0;
+volatile TUpcallPointer UpcallPointer = NULL;
+volatile void *UpcallParam = NULL;
+
+extern volatile uint32_t cart_gp;
+extern volatile uint32_t *saved_sp;
+
+void CallUpcall(void *param, TUpcallPointer upcall, uint32_t *gp, uint32_t *sp);
+
 void c_interrupt_handler(void) {
   uint32_t mcause = csr_mcause_read();
   if (mcause == 0x80000007) {
@@ -94,6 +103,7 @@ void c_interrupt_handler(void) {
     NewCompare += RVCOS_TICKS_MS;
     MTIMECMP_HIGH = NewCompare >> 32;
     MTIMECMP_LOW = NewCompare;
+    controller_status = CONTROLLER;
     if (CARTRIDGE & 0x1) {
       ticks++;
       dec_tick();
@@ -102,4 +112,7 @@ void c_interrupt_handler(void) {
   } else if ((VIP & 0x2) && mcause == 0x8000000B) {
     video_interrupt_handler();
   }
+  if(UpcallPointer){
+        CallUpcall((void *)UpcallParam, (TUpcallPointer)UpcallPointer, (uint32_t *)cart_gp, (uint32_t *)saved_sp);
+    }
 }
