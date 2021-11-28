@@ -214,7 +214,7 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        SGraphicDimensionsRef dim, TPaletteIndexRef src,
                        uint32_t srcwidth) {
   writei(pos->DXPosition, 20);
-  overlap(pos, dim);
+  // overlap(pos, dim);
   if (gid < 4) {
     for(int i=0;i<288;i++){
       if(pos->DXPosition+srcwidth<512 && pos->DYPosition+i<288)
