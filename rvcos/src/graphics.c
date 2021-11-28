@@ -154,7 +154,7 @@ TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
   } else if (gid < 64 + 4) {
     LargeSpriteControls[gid - 4].DXOffset = 64 + pos->DXPosition;
     LargeSpriteControls[gid - 4].DYOffset = 64 + pos->DYPosition;
-  } else {
+  } else if (gid < 128 + 64 + 4) {
     SmallSpriteControls[gid - 68].DXOffset = 16 + pos->DXPosition;
     SmallSpriteControls[gid - 68].DYOffset = 16 + pos->DYPosition;
     SmallSpriteControls[gid - 68].DZ = pos->DZPosition;
@@ -163,38 +163,52 @@ TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
 }
 
 TStatus RVCGraphicDeactivate(TGraphicID gid) { //
+  if (gid < 4) {
+    BackgroundControls[gid].DXOffset = 512;
+    BackgroundControls[gid].DYOffset = 288;
+    BackgroundControls[gid].DZ = 0;
+  } else if (gid < 64 + 4) {
+    LargeSpriteControls[gid - 4].DXOffset = 64;
+    LargeSpriteControls[gid - 4].DYOffset = 64;
+  } else if (gid < 128 + 64 + 4) {
+    SmallSpriteControls[gid - 68].DXOffset = 16;
+    SmallSpriteControls[gid - 68].DYOffset = 16;
+    SmallSpriteControls[gid - 68].DZ = 7;
+  }
   return RVCOS_STATUS_SUCCESS;
 }
 
 void overlap(SGraphicPositionRef pos, SGraphicDimensionsRef dim) {
-  // if (pos->DXPosition + dim->DXDimension > pos2->DXPosition &&
-  //     pos->DYPosition + dim->DYDimension > pos2->DYPosition &&
-  //     pos->DXPosition < pos2->DXPosition + dim2->DXDimension &&
-  //     pos->DYPosition < pos2->DYPosition + dim2->DYDimension) {
-  //   pos->DXPosition = pos2->DXPosition + dim2->DXDimension;
-  //   pos->DYPosition = pos2->DYPosition + dim2->DYDimension;
-  // }
+  if (pos->DXPosition + dim->DWidth > 512) {
+    dim->DWidth = 512 - pos->DXPosition;
+  }
+  if (pos->DYPosition + dim->DHeight > 288) {
+    dim->DHeight = 288 - pos->DYPosition;
+  }
 }
 
 TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        SGraphicDimensionsRef dim, TPaletteIndexRef src,
                        uint32_t srcwidth) {
   writei(pos->DXPosition, 20);
+  dim->DWidth = srcwidth;
+  overlap(pos, dim);
   if (gid < 4) {
-    // for(int i=0;i<288;i++){
-    //   memcpy(BackgroundData[gid] + pos->DXPosition + i*512,
-    //          src+srcwidth*i, srcwidth);
-    // }
-    memcpy((void *)BackgroundData[gid]+srcwidth*pos->DYPosition+pos->DXPosition, src, srcwidth*288);
+    for(int i=0;i<288;i++){
+      if(pos->DXPosition+srcwidth<512 && pos->DYPosition+i<288)
+      memcpy(BackgroundData[gid] + pos->DXPosition + i*512,
+             src+srcwidth*i, srcwidth);
+    }
+    // memcpy((void *)BackgroundData[gid], src, 512*288);
   } else if (gid < 68) {
     for(int i=0;i<dim->DHeight;i++){
-      memcpy(LargeSpriteData[gid - 4] + pos->DXPosition + i*64,
+      memcpy(LargeSpriteData[gid - 4] + pos->DXPosition + i*dim->DWidth,
              src+srcwidth*i, srcwidth);
     }
     // memcpy((void *)LargeSpriteData[gid - 4]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
-  } else {
+  } else if(gid < 128+64 + 4) {
     for(int i=0;i<dim->DHeight;i++){
-      memcpy(SmallSpriteData[gid - 68] + pos->DXPosition + i*16,
+      memcpy(SmallSpriteData[gid - 68] + pos->DXPosition + i*dim->DWidth,
              src+srcwidth*i, srcwidth);
     }
     // memcpy((void *)SmallSpriteData[gid - 68]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
