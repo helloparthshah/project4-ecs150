@@ -89,7 +89,6 @@ void InitGraphics(void) {
   SpritePalettes.used = 0;
   push_palette(&BackgroundPalettes, RVCOSPaletteDefaultColors);
   push_palette(&SpritePalettes, RVCOSPaletteDefaultColors);
-  writei(BackgroundPalettes.Palettes[0][1].DRed, 5);
 }
 
 volatile TVideoMode currentVideoMode = RVCOS_VIDEO_MODE_TEXT;
@@ -119,24 +118,24 @@ int nSs = 0;
 TStatus RVCGraphicCreate(TGraphicType type, TGraphicIDRef gidref) {
   if (type == RVCOS_GRAPHIC_TYPE_FULL) {
     BackgroundControls[nBg].DPalette = 0;
-    BackgroundControls[nBg].DXOffset = 512;
-    BackgroundControls[nBg].DYOffset = 288;
+    BackgroundControls[nBg].DXOffset = 0;
+    BackgroundControls[nBg].DYOffset = 0;
     BackgroundControls[nBg].DZ = 0;
     *gidref = nBg++;
   } else if (type == RVCOS_GRAPHIC_TYPE_LARGE) {
     LargeSpriteControls[nLs].DPalette = 0;
-    LargeSpriteControls[nLs].DXOffset = 64;
-    LargeSpriteControls[nLs].DYOffset = 64;
-    LargeSpriteControls[nLs].DWidth = 31;
-    LargeSpriteControls[nLs].DHeight = 31;
+    LargeSpriteControls[nLs].DXOffset = 0;
+    LargeSpriteControls[nLs].DYOffset = 0;
+    LargeSpriteControls[nLs].DWidth = 0;
+    LargeSpriteControls[nLs].DHeight = 0;
     *gidref = nLs++ + 4;
   } else if (type == RVCOS_GRAPHIC_TYPE_SMALL) {
     SmallSpriteControls[nSs].DPalette = 0;
-    SmallSpriteControls[nSs].DXOffset = 16;
-    SmallSpriteControls[nSs].DYOffset = 16;
+    SmallSpriteControls[nSs].DXOffset = 0;
+    SmallSpriteControls[nSs].DYOffset = 0;
     SmallSpriteControls[nSs].DZ = 7;
-    SmallSpriteControls[nSs].DWidth = 15;
-    SmallSpriteControls[nSs].DHeight = 15;
+    SmallSpriteControls[nSs].DWidth = 0;
+    SmallSpriteControls[nSs].DHeight = 0;
     *gidref = nSs++ + 64 + 4;
   }
   return RVCOS_STATUS_SUCCESS;
@@ -210,7 +209,7 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
   overlap(pos, dim);
   if (gid < 4) {
     for(int i=0;i<288;i++){
-      if(pos->DXPosition+srcwidth<512 && pos->DYPosition+i<288)
+      // if(pos->DXPosition+srcwidth<512 && pos->DYPosition+i<288)
       memcpy(BackgroundData[gid] + i*512,
              src+srcwidth*i, 512);
     }
