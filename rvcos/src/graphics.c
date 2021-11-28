@@ -185,6 +185,14 @@ void overlap(SGraphicPositionRef pos, SGraphicDimensionsRef dim) {
   if (pos->DYPosition + dim->DHeight > 288) {
     dim->DHeight = 288 - pos->DYPosition;
   }
+  if(pos->DXPosition < 0) {
+    dim->DWidth -= pos->DXPosition;
+    pos->DXPosition = 0;
+  }
+  if(pos->DYPosition < 0) {
+    dim->DHeight -= pos->DYPosition;
+    pos->DYPosition = 0;
+  }
 }
 
 TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
