@@ -219,7 +219,7 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
   if (gid < 4) {
     if(BackgroundDataBuffer[gid]!=BackgroundData[gid])
     for(int i=0;i<288;i++){
-      // if(pos->DXPosition+srcwidth<512 && pos->DYPosition+i<288)
+      if(pos->DXPosition+srcwidth<512 && pos->DYPosition+i<288)
       memcpy(BackgroundDataBuffer[gid] + i*512,
              src+srcwidth*i, 512);
     }
