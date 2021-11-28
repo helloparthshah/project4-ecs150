@@ -185,7 +185,7 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
     //   memcpy(BackgroundData[gid] + pos->DXPosition + i*512,
     //          src+srcwidth*i, srcwidth);
     // }
-    memcpy((void *)BackgroundData[gid]+srcwidth*pos->DYPosition+pos->DXPosition, src, srcwidth);
+    memcpy((void *)BackgroundData[gid]+srcwidth*pos->DYPosition+pos->DXPosition, src, srcwidth*288);
   } else if (gid < 68) {
     for(int i=0;i<dim->DHeight;i++){
       memcpy(LargeSpriteData[gid - 4] + pos->DXPosition + i*64,
