@@ -221,16 +221,16 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
       memcpy(BackgroundData[gid] + pos->DXPosition + i*512,
              src+srcwidth*i, srcwidth);
     }
-    memcpy((void *)BackgroundData[gid] +pos->DXPosition+pos->DYPosition*dim->DWidth, src, srcwidth);
+    // memcpy((void *)BackgroundData[gid] +pos->DXPosition+pos->DYPosition*dim->DWidth, src, srcwidth);
   } else if (gid < 68) {
-    for(int i=0;i<dim->DHeight;i++){
-      memcpy(LargeSpriteData[gid - 4] + pos->DXPosition + i*dim->DWidth,
+    for(int i=0;i<64;i++){
+      memcpy(LargeSpriteData[gid - 4] + i*64,
              src+srcwidth*i, srcwidth);
     }
     // memcpy((void *)LargeSpriteData[gid - 4]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
   } else if(gid < 128+64 + 4) {
-    for(int i=0;i<dim->DHeight;i++){
-      memcpy(SmallSpriteData[gid - 68] + pos->DXPosition + i*dim->DWidth,
+    for(int i=0;i<16;i++){
+      memcpy(SmallSpriteData[gid - 68] + i*16,
              src+srcwidth*i, srcwidth);
     }
     // memcpy((void *)SmallSpriteData[gid - 68]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
