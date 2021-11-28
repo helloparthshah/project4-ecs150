@@ -217,21 +217,20 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
   overlap(pos, dim);
   if (gid < 4) {
     for(int i=0;i<288;i++){
-      if(pos->DXPosition+srcwidth<512 && pos->DYPosition+i<288)
-      memcpy(BackgroundData[gid] + pos->DXPosition + i*512,
-             src+srcwidth*i, srcwidth);
+      // if(pos->DXPosition+srcwidth<512 && pos->DYPosition+i<288)
+      memcpy(BackgroundData[gid] + i*512,
+             src+srcwidth*i, 512);
     }
-    // memcpy((void *)BackgroundData[gid] +pos->DXPosition+pos->DYPosition*dim->DWidth, src, srcwidth);
+    // memcpy((void *)BackgroundData[gid], src, 512*288);
   } else if (gid < 68) {
     for(int i=0;i<64;i++){
       memcpy(LargeSpriteData[gid - 4] + i*64,
-             src+srcwidth*i, srcwidth);
+             src+srcwidth*i, 64);
     }
     // memcpy((void *)LargeSpriteData[gid - 4]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
   } else if(gid < 128+64 + 4) {
     for(int i=0;i<16;i++){
-      memcpy(SmallSpriteData[gid - 68] + i*16,
-             src+srcwidth*i, srcwidth);
+      memcpy(SmallSpriteData[gid - 68] + i*16, src+srcwidth*i, 64);
     }
     // memcpy((void *)SmallSpriteData[gid - 68]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
   }
@@ -241,6 +240,7 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
 TStatus RVCPaletteCreate(TPaletteIDRef pidref) {
   *pidref = SpritePalettes.used;
   push_palette(&SpritePalettes, RVCOSPaletteDefaultColors);
+  push_palette(&BackgroundPalettes, RVCOSPaletteDefaultColors);
   return RVCOS_STATUS_SUCCESS;
 }
 
@@ -250,7 +250,9 @@ TStatus RVCPaletteDelete(TPaletteID pid) { //
 
 TStatus RVCPaletteUpdate(TPaletteID pid, SColorRef cols, TPaletteIndex offset,
                          uint32_t count) {
-  memcpy((SColor *)SpritePalettes.Palettes[pid], cols + offset,
+  memcpy((SColor *)SpritePalettes.Palettes[pid]+offset, cols,
+         count * sizeof(SColor));
+  memcpy((SColor *)BackgroundPalettes.Palettes[pid]+offset, cols,
          count * sizeof(SColor));
   return RVCOS_STATUS_SUCCESS;
 }
