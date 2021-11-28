@@ -64,11 +64,11 @@ int main() {
     CreateHeroFrames(HeroFrames,&GameHeroData);
     WriteString("Done\nLoading Levels: ");
     ReplaceWallTransparency();
-    CreateMapLevelBackgrounds(MapLevelBackgrounds, MapLevels);
+    /* CreateMapLevelBackgrounds(MapLevelBackgrounds, MapLevels);
     Position.DXPosition = 0;
     Position.DYPosition = 0;
     Position.DZPosition = 0;
-    RVCGraphicActivate(MapLevelBackgrounds[0],&Position,NULL,MainPalette);
+    RVCGraphicActivate(MapLevelBackgrounds[0],&Position,NULL,MainPalette); */
     WriteString("Done\nStarting");
     RenderHero(&HeroState,HeroFrames,MainPalette);
     RVCSetVideoUpcall(VideoUpcall,NULL);
