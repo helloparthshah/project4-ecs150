@@ -108,16 +108,11 @@ TStatus RVCChangeVideoMode(TVideoMode mode) {
 
 extern volatile TUpcallPointer UpcallPointer;
 extern volatile void *UpcallParam;
-int upcall_flag = 0;
 
 TStatus RVCSetVideoUpcall(TThreadEntry upcall, void *param) { 
-  if (upcall_flag == 0) {
     UpcallPointer = (TUpcallPointer)upcall;
     UpcallParam = (void*)param;
-    upcall_flag = 1;
     return RVCOS_STATUS_SUCCESS;
-  }
-  return RVCOS_STATUS_FAILURE;
 }
 
 int nBg = 0;
@@ -223,11 +218,11 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        uint32_t srcwidth) {
   overlap(pos, dim);
   if (gid < 4) {
-    for(int i=0;i<288;i++){
+    /* for(int i=0;i<288;i++){
       // if(src+srcwidth*i+dim->DWidth!=NULL)
       memcpy((void*)BackgroundDataBuffer[gid] + i*512, src+i*srcwidth, 512);
-    }
-    // memcpy((void *)BackgroundDataBuffer[gid], src, srcwidth);
+    } */
+    memcpy((void *)BackgroundDataBuffer[gid], src, srcwidth);
   } else if (gid < 68) {
     for(int i=0;i<dim->DHeight;i++){
       memcpy((void*)LargeSpriteDataBuffer[gid - 4] + i*dim->DWidth,

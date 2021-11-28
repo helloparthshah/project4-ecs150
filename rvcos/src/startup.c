@@ -94,6 +94,8 @@ volatile void *UpcallParam = NULL;
 extern volatile uint32_t cart_gp;
 extern volatile uint32_t *saved_sp;
 
+volatile uint32_t upcall_flag = 0;
+
 void CallUpcall(void *param, TUpcallPointer upcall, uint32_t *gp, uint32_t *sp);
 
 void c_interrupt_handler(void) {
@@ -112,7 +114,15 @@ void c_interrupt_handler(void) {
   } else if ((VIP & 0x2) && mcause == 0x8000000B) {
     video_interrupt_handler();
   }
-  if(UpcallPointer){
+  if(UpcallPointer && upcall_flag == 0){
+        upcall_flag = 1;
+        // enable interrupts
+        csr_enable_interrupts();
+        csr_write_mie(0x888);
         CallUpcall((void *)UpcallParam, (TUpcallPointer)UpcallPointer, (uint32_t *)cart_gp, (uint32_t *)saved_sp);
+        upcall_flag = 0;
+        // disable interrupts
+        csr_disable_interrupts();
+        csr_write_mie(0x000);
     }
 }
