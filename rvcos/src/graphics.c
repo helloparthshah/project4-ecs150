@@ -143,8 +143,8 @@ TStatus RVCGraphicDelete(TGraphicID gid) { //
 TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
                            SGraphicDimensionsRef dim, TPaletteID pid) {
   if (gid < 4) {
-    BackgroundControls[gid].DXOffset = 512+ pos->DXPosition;
-    BackgroundControls[gid].DYOffset = 288+ pos->DYPosition;
+    BackgroundControls[gid].DXOffset = 512 + pos->DXPosition;
+    BackgroundControls[gid].DYOffset = 288 + pos->DYPosition;
     BackgroundControls[gid].DZ = pos->DZPosition;
   } else if (gid < 64 + 4) {
     LargeSpriteControls[gid - 4].DXOffset = 64 + pos->DXPosition;
