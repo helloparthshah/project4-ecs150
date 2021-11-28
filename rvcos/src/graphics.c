@@ -221,7 +221,7 @@ void overlap(SGraphicPositionRef pos, SGraphicDimensionsRef dim, uint32_t gid) {
 TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        SGraphicDimensionsRef dim, TPaletteIndexRef src,
                        uint32_t srcwidth) {
-  // overlap(pos, dim, gid);
+  overlap(pos, dim, gid);
   if (gid < 4) {
     for(int i=0;i<dim->DHeight;i++){
       memcpy((void*)BackgroundDataBuffer[gid]+pos->DXPosition+pos->DYPosition*512 + i*512, src+i*srcwidth, dim->DWidth);
