@@ -199,7 +199,6 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        SGraphicDimensionsRef dim, TPaletteIndexRef src,
                        uint32_t srcwidth) {
   writei(pos->DXPosition, 20);
-  dim->DWidth = srcwidth;
   overlap(pos, dim);
   if (gid < 4) {
     for(int i=0;i<288;i++){
@@ -207,7 +206,7 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
       memcpy(BackgroundData[gid] + pos->DXPosition + i*512,
              src+srcwidth*i, srcwidth);
     }
-    // memcpy((void *)BackgroundData[gid], src, 512*288);
+    memcpy((void *)BackgroundData[gid] +pos->DXPosition+pos->DYPosition*dim->DWidth, src, srcwidth);
   } else if (gid < 68) {
     for(int i=0;i<dim->DHeight;i++){
       memcpy(LargeSpriteData[gid - 4] + pos->DXPosition + i*dim->DWidth,
