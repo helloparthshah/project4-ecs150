@@ -225,11 +225,11 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
   } else if (gid < 68) {
     for(int i=0;i<dim->DHeight;i++){
       memcpy((void*)LargeSpriteDataBuffer[gid - 4]+pos->DXPosition+pos->DYPosition*dim->DWidth + i*dim->DWidth,
-             src+srcwidth*i, dim->DWidth);
+             src+srcwidth*i, srcwidth);
     }
   } else if(gid < 128+64 + 4) {
     for(int i=0;i<dim->DWidth;i++){
-      memcpy((void*)SmallSpriteDataBuffer[gid - 68] +pos->DXPosition+pos->DYPosition*dim->DWidth + i*dim->DWidth, src+srcwidth*i, dim->DWidth);
+      memcpy((void*)SmallSpriteDataBuffer[gid - 68] +pos->DXPosition+pos->DYPosition*dim->DWidth + i*dim->DWidth, src+srcwidth*i, srcwidth);
     }
   }
   return RVCOS_STATUS_SUCCESS;
