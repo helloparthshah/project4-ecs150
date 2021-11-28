@@ -181,11 +181,11 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
                        uint32_t srcwidth) {
   writei(pos->DXPosition, 20);
   if (gid < 4) {
-    for(int i=0;i<288;i++){
-      memcpy(BackgroundData[gid] + pos->DXPosition + i*512,
-             src+srcwidth*i, srcwidth);
-    }
-    // memcpy((void *)BackgroundData[gid]+srcwidth*pos->DYPosition+pos->DXPosition, src, srcwidth);
+    // for(int i=0;i<288;i++){
+    //   memcpy(BackgroundData[gid] + pos->DXPosition + i*512,
+    //          src+srcwidth*i, srcwidth);
+    // }
+    memcpy((void *)BackgroundData[gid]+srcwidth*pos->DYPosition+pos->DXPosition, src, srcwidth);
   } else if (gid < 68) {
     for(int i=0;i<dim->DHeight;i++){
       memcpy(LargeSpriteData[gid - 4] + pos->DXPosition + i*64,
@@ -193,11 +193,11 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
     }
     // memcpy((void *)LargeSpriteData[gid - 4]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
   } else {
-    // for(int i=0;i<dim->DHeight;i++){
-    //   memcpy(SmallSpriteData[gid - 68] + pos->DXPosition + i*16,
-    //          src+srcwidth*i, srcwidth);
-    // }
-    memcpy((void *)SmallSpriteData[gid - 68]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
+    for(int i=0;i<dim->DHeight;i++){
+      memcpy(SmallSpriteData[gid - 68] + pos->DXPosition + i*16,
+             src+srcwidth*i, srcwidth);
+    }
+    // memcpy((void *)SmallSpriteData[gid - 68]+dim->DWidth*pos->DYPosition+ pos->DXPosition, src, dim->DWidth * dim->DHeight);
   }
   return RVCOS_STATUS_SUCCESS;
 }
