@@ -216,9 +216,9 @@ TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
 
     if(ga_queue==NULL)
       ga_queue=gamalloc();
-  // ga_push_back(ga_queue, (gActivateStruct){gid, pos, dim, pid});
+  ga_push_back(ga_queue, (gActivateStruct){gid, pos, dim, pid});
   RVCWriteText("",0); 
-  setData(gid, pos, dim, pid);
+  // setData(gid, pos, dim, pid);
   // ga_push_back(ga_queue, (gActivateStruct){gid, pos, dim, pid,curr_running});
   // tcb.threads[curr_running].state = RVCOS_THREAD_STATE_WAITING;
   // scheduler();
@@ -279,7 +279,7 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
   if (gid < 4) {
     BackgroundDirty[gid] = 1;
     for(int i=0;i<dim->DHeight;i++){
-      memcpy((void*)BackgroundDataBuffer[gid]+pos->DXPosition+pos->DYPosition*512 + i*512, src+i*srcwidth, dim->DWidth);
+      memcpy((void*)BackgroundDataBuffer[gid]+pos->DXPosition+(pos->DYPosition+i)*512, src+i*srcwidth, dim->DWidth);
     }
   } else if (gid < 68) {
     SmallSpriteDirty[gid - 4] = 1;
