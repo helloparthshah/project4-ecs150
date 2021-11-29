@@ -446,6 +446,11 @@ TStatus RVCMutexCreate(TMutexIDRef mutexref) {
 }
 
 TStatus RVCMutexDelete(TMutexID mutex) {
+  // Cannot delete if locked
+  if (mcb.mutexes[mutex].state == RVCOS_MUTEX_STATE_LOCKED)
+    return RVCOS_STATUS_ERROR_INVALID_STATE;
+  if (mcb.mutexes[mutex].id != mutex)
+    return RVCOS_STATUS_ERROR_INVALID_ID;
   // Deleting the mutex
   // mutex_array.mutexes[mutex].state = RVCOS_MUTEX_STATE_DELETED;
   return RVCOS_STATUS_SUCCESS;
@@ -504,9 +509,9 @@ TStatus RVCMutexRelease(TMutexID mutex) {
   if (mcb.mutexes[mutex].id != mutex)
     return RVCOS_STATUS_ERROR_INVALID_ID;
   if (mcb.mutexes[mutex].state != RVCOS_MUTEX_STATE_LOCKED)
-    return RVCOS_STATUS_FAILURE;
+    return RVCOS_STATUS_ERROR_INVALID_STATE;
   if (mcb.mutexes[mutex].owner != curr_running)
-    return RVCOS_STATUS_FAILURE;
+    return RVCOS_STATUS_ERROR_INVALID_STATE;
 
   // Setting the state
   mcb.mutexes[mutex].state = RVCOS_MUTEX_STATE_UNLOCKED;
