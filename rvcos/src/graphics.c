@@ -216,6 +216,7 @@ void overlap(SGraphicPositionRef pos, SGraphicDimensionsRef dim, uint32_t gid) {
     if(pos->DYPosition+dim->DHeight>h){
       pos->DYPosition=h-dim->DHeight;
     }
+    
 }
 
 TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
