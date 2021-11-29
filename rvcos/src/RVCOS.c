@@ -683,13 +683,13 @@ void video_interrupt_handler(void) {
         scheduler();
       } */
     }
-    // scheduler();
+    scheduler();
   }
   if (ga_queue != NULL) {
     while (isEmptyGA(ga_queue) == 0) {
       gActivateStruct ga = ga_pop_front(ga_queue);
       setData(ga.gid, ga.pos, ga.dim, ga.pid);
-      scheduler();
+      // scheduler();
     }
   }
       scheduler();
