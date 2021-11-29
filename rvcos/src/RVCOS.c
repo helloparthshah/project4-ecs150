@@ -664,6 +664,11 @@ void output_char(const char *buffer, int writesize) {
   }
 }
 
+void setData(TGraphicID gid, SGraphicPositionRef pos,
+                           SGraphicDimensionsRef dim, TPaletteID pid);
+
+extern gActivateQueue *ga_queue;
+
 void video_interrupt_handler(void) {
   VIP = 0x2;
   if (text_buffer_queue != NULL) {
@@ -679,6 +684,15 @@ void video_interrupt_handler(void) {
     }
     scheduler();
   }
+  // if (ga_queue != NULL) {
+  //   while (isEmptyGA(ga_queue) == 0) {
+  //     gActivateStruct ga = ga_pop_front(ga_queue);
+  //     setData(ga.gid, ga.pos, ga.dim, ga.pid);
+  //     tcb.threads[ga.tid].state = RVCOS_THREAD_STATE_READY;
+  //     push_back_prio(ready_queue, ga.tid);
+  //   }
+  //   scheduler();
+  // }
 }
 
 TStatus RVCWriteText(const TTextCharacter *buffer, TMemorySize writesize) {

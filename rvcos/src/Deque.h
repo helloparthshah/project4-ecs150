@@ -119,4 +119,28 @@ TThreadID pop_front_prio(volatile PrioDeque *d);
 void remove_prio(volatile PrioDeque *d, TThreadID tid);
 uint32_t pd_size(volatile PrioDeque *d);
 
+typedef struct{
+  TGraphicID gid;
+  SGraphicPositionRef pos;
+  SGraphicDimensionsRef dim;
+  TPaletteID pid;
+  TThreadID tid;
+} gActivateStruct;
+
+struct gActivateNode{
+  gActivateStruct val;
+  struct gActivateNode *next;
+  struct gActivateNode *prev;
+} ;
+
+typedef struct {
+  struct gActivateNode *head;
+  struct gActivateNode *tail;
+}gActivateQueue;
+
+gActivateQueue *gamalloc();
+void ga_push_back(volatile gActivateQueue *d, gActivateStruct v);
+gActivateStruct ga_pop_front(volatile gActivateQueue *d);
+int isEmptyGA(volatile gActivateQueue *d);
+
 #endif

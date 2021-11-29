@@ -328,3 +328,53 @@ uint32_t pd_size(volatile PrioDeque *d) {
     s += size(d->low);
   return s;
 }
+
+gActivateQueue *gamalloc() {
+  // Allocating the size of the Deque
+  gActivateQueue *d;
+  RVCMemoryAllocate(sizeof(gActivateQueue), (void **)&d);
+  if (d != NULL)
+    d->head = d->tail = NULL;
+  return d;
+}
+
+void ga_push_back(volatile gActivateQueue *d, gActivateStruct v) {
+  struct gActivateNode *n;
+  uint32_t p = 0;
+  RVCMemoryAllocate(sizeof(struct gActivateNode), (void **)&n);
+  if (n == NULL)
+    return;
+  // Setting the value of the node
+  n->val = v;
+  n->prev = d->tail;
+  n->next = NULL;
+  // If the only node then set to first
+  if (d->head == NULL) {
+    d->head = d->tail = n;
+  } else {
+    // Set next of tail to node and set tail to n
+    d->tail->next = n;
+    d->tail = n;
+  }
+}
+
+gActivateStruct ga_pop_front(volatile gActivateQueue *d) {
+  // Get value
+  gActivateStruct v = d->head->val;
+  struct gActivateNode *n = d->head;
+  if (d->head == d->tail) {
+    d->head = d->tail = NULL;
+  } else
+    // Set head to next
+    d->head = n->next;
+  // free(n);
+  RVCMemoryPoolDeallocate(0, n);
+  return v;
+}
+
+int isEmptyGA(volatile gActivateQueue *d) {
+  // Checking if head is null
+  if (d->head == NULL)
+    return 1;
+  return 0;
+}
