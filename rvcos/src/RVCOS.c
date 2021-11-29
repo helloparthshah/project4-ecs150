@@ -671,28 +671,25 @@ extern gActivateQueue *ga_queue;
 
 void video_interrupt_handler(void) {
   VIP = 0x2;
+  if (ga_queue != NULL) {
+    while (isEmptyGA(ga_queue) == 0) {
+      gActivateStruct ga = ga_pop_front(ga_queue);
+      setData(ga.gid, ga.pos, ga.dim, ga.pid);
+    }
+  }
   if (text_buffer_queue != NULL) {
     while (isEmptyTB(text_buffer_queue) == 0) {
       TextBuffer tb = tb_pop_front(text_buffer_queue);
       output_char(tb.buffer, tb.writesize);
       tcb.threads[tb.tid].state = RVCOS_THREAD_STATE_READY;
       push_back_prio(ready_queue, tb.tid);
-      // if (tcb.threads[tb.tid].priority > tcb.threads[curr_running].priority) {
-      //   // push_back_prio(ready_queue, tb.tid);
-      //   scheduler();
-      // }
+      if (tcb.threads[tb.tid].priority > tcb.threads[curr_running].priority) {
+        // push_back_prio(ready_queue, tb.tid);
+        scheduler();
+      }
     }
-    scheduler();
+    // scheduler();
   }
-  // if (ga_queue != NULL) {
-  //   while (isEmptyGA(ga_queue) == 0) {
-  //     gActivateStruct ga = ga_pop_front(ga_queue);
-  //     setData(ga.gid, ga.pos, ga.dim, ga.pid);
-  //     tcb.threads[ga.tid].state = RVCOS_THREAD_STATE_READY;
-  //     push_back_prio(ready_queue, ga.tid);
-  //   }
-  //   scheduler();
-  // }
 }
 
 TStatus RVCWriteText(const TTextCharacter *buffer, TMemorySize writesize) {

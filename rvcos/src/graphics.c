@@ -102,10 +102,10 @@ void InitGraphics(void) {
 volatile TVideoMode currentVideoMode = RVCOS_VIDEO_MODE_TEXT;
 
 TStatus RVCChangeVideoMode(TVideoMode mode) {
-  // error checking
+  /* // error checking
   if (mode != RVCOS_VIDEO_MODE_TEXT && mode != RVCOS_VIDEO_MODE_GRAPHICS) {
-    return RVCOS_STATUS_ERROR_INVALID_PARAMETER;
-  }
+   return RVCOS_STATUS_ERROR_INVALID_PARAMETER;
+  } */
   if (mode == currentVideoMode) {
     return RVCOS_STATUS_SUCCESS;
   }
@@ -209,25 +209,23 @@ void setData(TGraphicID gid, SGraphicPositionRef pos,
   }
 }
 
-// gActivateQueue *ga_queue;
-extern volatile int curr_running;
+gActivateQueue *ga_queue;
 
 TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
                            SGraphicDimensionsRef dim, TPaletteID pid) {
 
-    // if(ga_queue==NULL)
-    //   ga_queue=gamalloc();
-  // ga_push_back(ga_queue, (gActivateStruct){gid, pos, dim, pid,curr_running});
-  RVCWriteText("",0);
+    if(ga_queue==NULL)
+      ga_queue=gamalloc();
+  // ga_push_back(ga_queue, (gActivateStruct){gid, pos, dim, pid});
+  RVCWriteText("",0); 
   setData(gid, pos, dim, pid);
+  // ga_push_back(ga_queue, (gActivateStruct){gid, pos, dim, pid,curr_running});
+  // tcb.threads[curr_running].state = RVCOS_THREAD_STATE_WAITING;
+  // scheduler();
   return RVCOS_STATUS_SUCCESS;
 }
 
-TStatus RVCGraphicDeactivate(TGraphicID gid) { //
-  // error checking
-  if(gid>nBg || gid>64+nLs || gid>128+nSs)
-    return RVCOS_STATUS_ERROR_INVALID_ID;
-  
+TStatus RVCGraphicDeactivate(TGraphicID gid) {
   if (gid < 4) {
     BackgroundControls[gid].DXOffset = 0;
     BackgroundControls[gid].DYOffset = 0;

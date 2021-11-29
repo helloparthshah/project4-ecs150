@@ -124,7 +124,6 @@ typedef struct{
   SGraphicPositionRef pos;
   SGraphicDimensionsRef dim;
   TPaletteID pid;
-  TThreadID tid;
 } gActivateStruct;
 
 struct gActivateNode{
