@@ -211,10 +211,18 @@ void overlap(SGraphicPositionRef pos, SGraphicDimensionsRef dim, uint32_t gid) {
   }
 
     if(pos->DXPosition+dim->DWidth>w){
-      pos->DXPosition=w-dim->DWidth;
+      dim->DWidth=w-pos->DXPosition;
     }
     if(pos->DYPosition+dim->DHeight>h){
-      pos->DYPosition=h-dim->DHeight;
+      dim->DHeight=h-pos->DYPosition;
+    }
+    if(pos->DXPosition<0){
+      pos->DXPosition=0;
+      dim->DWidth=w-pos->DXPosition;
+    }
+    if(pos->DYPosition<0){
+      pos->DYPosition=0;
+      dim->DHeight=h-pos->DYPosition;
     }
     
 }
