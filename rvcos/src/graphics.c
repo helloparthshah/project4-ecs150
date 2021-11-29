@@ -153,8 +153,8 @@ TStatus RVCGraphicDelete(TGraphicID gid) { //
   return RVCOS_STATUS_SUCCESS;
 }
 
-TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
-                           SGraphicDimensionsRef dim, TPaletteID pid) {
+void setData(TGraphicID gid, SGraphicPositionRef pos,
+                           SGraphicDimensionsRef dim, TPaletteID pid){
   if (gid < 4) {
     BackgroundControls[gid].DXOffset = 512 + pos->DXPosition;
     BackgroundControls[gid].DYOffset = 288 + pos->DYPosition;
@@ -177,6 +177,12 @@ TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
     SmallSpriteControls[gid - 68].DZ = pos->DZPosition;
     memcpy((void*)SmallSpriteData[gid - 68], (void*)SmallSpriteDataBuffer[gid - 68], dim->DWidth*dim->DHeight);
   }
+}
+
+TStatus RVCGraphicActivate(TGraphicID gid, SGraphicPositionRef pos,
+                           SGraphicDimensionsRef dim, TPaletteID pid) {
+  if(gid>nBg || gid>64+nLs || gid>128+nSs)
+    return RVCOS_STATUS_INVALID_PARAMETER;
   return RVCOS_STATUS_SUCCESS;
 }
 
