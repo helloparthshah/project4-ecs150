@@ -70,12 +70,12 @@ extern uint8_t _heap_base;
 void writei(int, int);
 
 void initSystemPool() {
-  pushNode(&freeNodesList, &_heap_base, &_pool_size);
+  pushNode(&freeNodesList, &_heap_base, (int)&_pool_size);
   // void *p = malloc(&_pool_size);
   mp_init(&memory_pool_array);
   memory_pool_array.pools[0] = (SMemoryPoolFreeChunk){
       .DBase = &_heap_base,
-      .DSize = &_pool_size,
+      .DSize = (int)&_pool_size,
       .Used = 0,
       .id = memory_pool_array.used,
   };
