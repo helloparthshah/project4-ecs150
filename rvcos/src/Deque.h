@@ -89,6 +89,22 @@ typedef struct {
     uint32_t size;
 } dma_t;
 
+struct dmaNode {
+  struct dmaNode *next;
+  struct dmaNode *prev;
+  dma_t val;
+};
+
+typedef struct {
+  struct dmaNode *head;
+  struct dmaNode *tail;
+} DMAQueue;
+
+DMAQueue* dma_malloc();
+void dma_push_back(volatile DMAQueue *d, dma_t v);
+dma_t dma_pop_front(volatile DMAQueue *d);
+int isEmptyDMA(volatile DMAQueue *d);
+
 void tb_push_back(volatile TBDeque *d, TextBuffer v);
 TextBuffer tb_pop_front(volatile TBDeque *d);
 int isEmptyTB(volatile TBDeque *d);

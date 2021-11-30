@@ -83,6 +83,7 @@ void init(void) {
 
 extern volatile uint32_t ticks;
 extern void scheduler();
+extern void dma_scheduler();
 extern void dec_tick();
 extern void video_interrupt_handler();
 #define VIP (*((volatile uint32_t *)0x40000004))
@@ -99,6 +100,8 @@ volatile uint32_t upcall_flag = 0;
 void CallUpcall(void *param, TUpcallPointer upcall, uint32_t *gp, uint32_t *sp);
 
 void c_interrupt_handler(void) {
+  // call dma scheduler
+  dma_scheduler();
   uint32_t mcause = csr_mcause_read();
   if (mcause == 0x80000007) {
     uint64_t NewCompare = (((uint64_t)MTIMECMP_HIGH) << 32) | MTIMECMP_LOW;

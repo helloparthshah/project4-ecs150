@@ -7,6 +7,7 @@
 #define DMADestination1 (*((volatile uint32_t *)0x40000024))
 #define DMACommand1     (*((volatile uint32_t *)0x40000028))
 #define DMAStatus1      (*((volatile uint32_t *)0x4000002C))
+
 #define DMASource2      (*((volatile uint32_t *)0x40000030))
 #define DMADestination2 (*((volatile uint32_t *)0x40000034))
 #define DMACommand2     (*((volatile uint32_t *)0x40000038))
@@ -15,43 +16,35 @@
 
 
 // dma queue
-static Deque dma_queue;
-
-// push to dma
-void dma_queue_push(void * source, void * destination, uint32_t size) {
-    dma_t * dma = malloc(sizeof(dma_t));
-    dma->source = source;
-    dma->destination = destination;
-    dma->size = size;
-    // deque_push(&dma_queue, dma);
-}
+volatile DMAQueue *dma_queue;
 
 void dma_scheduler(void) {
+  if(dma_queue)
   // check if there is a dma to be added from dma queue
- /*  if (deque_size(&dma_queue) > 0) {
+   if (!isEmptyDMA(dma_queue)) {
     // get dma from queue
-    dma_t * dma = deque_pop(&dma_queue);
-    if (DMAStatus1 & 0x80000000) {
+    dma_t dma = dma_pop_front(dma_queue);
+    if (!(DMAStatus1 & 0x80000000)) {
       // set dma source and destination
-      DMASource1 = (uint32_t)dma->source;
-      DMADestination1 = (uint32_t)dma->destination;
+      DMASource1 = (uint32_t)dma.source;
+      DMADestination1 = (uint32_t)dma.destination;
       // set dma size
-      DMACommand1 = dma->size;
+      DMACommand1 = dma.size;
       // start dma
       DMACommand1 |= 0x80000000;
-    } else if (DMAStatus2 & 0x80000000) {
+    } else if (!(DMAStatus2 & 0x80000000)) {
       // set dma source and destination
-      DMASource2 = (uint32_t)dma->source;
-      DMADestination2 = (uint32_t)dma->destination;
+      DMASource2 = (uint32_t)dma.source;
+      DMADestination2 = (uint32_t)dma.destination;
       // set dma size
-      DMACommand2 = dma->size;
+      DMACommand2 = dma.size;
       // start dma
       DMACommand2 |= 0x80000000;
     } else {
       // add dma back to queue
-      deque_push(&dma_queue, dma);
+      dma_push_back(dma_queue, dma);
     }
-  } */
+  } 
 }
 
 typedef struct {
@@ -255,7 +248,7 @@ void setData(TGraphicID gid, SGraphicPositionRef pos,
     if(BackgroundDirty[gid]==1){
       BackgroundDirty[gid] = 0;
       // push to dma queue
-      dma_queue_push((void *)BackgroundDataBuffer[gid], (void *)BackgroundData[gid], 512*288);
+      dma_push_back(dma_queue, (dma_t){(void *)BackgroundDataBuffer[gid], (void *)BackgroundData[gid], 512*288});
       // set DMASource to BackgroundDataBuffer[gid]
     memcpy((void*)BackgroundData[gid], (void*)BackgroundDataBuffer[gid], 512*288);
     }
@@ -265,16 +258,16 @@ void setData(TGraphicID gid, SGraphicPositionRef pos,
     LargeSpriteControls[gid - 4].DWidth = dim->DWidth-33;
     LargeSpriteControls[gid - 4].DHeight = dim->DHeight-33;
     // LargeSpriteControls[gid - 4].DPalette = pid;
-    if(PaletteBuffer.Palettes[pid].GraphicID != gid){
+    // if(PaletteBuffer.Palettes[pid].GraphicID != gid){
       LargeSpriteControls[gid - 4].DPalette = pid;
       PaletteBuffer.Palettes[pid].GraphicID = gid;
       memcpy((SColor *)SpritePalettes[pid], (void*)PaletteBuffer.Palettes[pid].Palette,
           256 * sizeof(SColor));
-      }
+      // }
     if(LargeSpriteDirty[gid-4]==1){
       LargeSpriteDirty[gid-4] = 0;
       // push to dma queue
-      dma_queue_push((void*)LargeSpriteDataBuffer[gid-4], (void*)LargeSpriteData[gid-4], 64*64);
+      dma_push_back(dma_queue, (dma_t){(void*)LargeSpriteDataBuffer[gid-4], (void*)LargeSpriteData[gid-4], 64*64});
     memcpy((void*)LargeSpriteData[gid - 4], (void*)LargeSpriteDataBuffer[gid - 4], 64*64);
     }
   } else if (gid < 128 + 64 + 4) {
@@ -284,16 +277,16 @@ void setData(TGraphicID gid, SGraphicPositionRef pos,
     SmallSpriteControls[gid - 68].DHeight = dim->DHeight-1;
     SmallSpriteControls[gid - 68].DPalette = pid;
     SmallSpriteControls[gid - 68].DZ = pos->DZPosition;
-    if(PaletteBuffer.Palettes[pid].GraphicID != gid){
+    // if(PaletteBuffer.Palettes[pid].GraphicID != gid){
       SmallSpriteControls[gid - 68].DPalette = pid;
       PaletteBuffer.Palettes[pid].GraphicID = gid;
       memcpy((SColor *)SpritePalettes[pid], (void*)PaletteBuffer.Palettes[pid].Palette,
           256 * sizeof(SColor));
-      }
+      // }
     if(SmallSpriteDirty[gid-68]==1){
       SmallSpriteDirty[gid-68] = 0;
       // push to dma queue
-      dma_queue_push((void*)SmallSpriteDataBuffer[gid-68], (void*)SmallSpriteData[gid-68], 16*16);
+      dma_push_back(dma_queue, (dma_t){(void*)SmallSpriteDataBuffer[gid-68], (void*)SmallSpriteData[gid-68], 16*16});
     memcpy((void*)SmallSpriteData[gid - 68], (void*)SmallSpriteDataBuffer[gid - 68], 16*16);
     }
   }

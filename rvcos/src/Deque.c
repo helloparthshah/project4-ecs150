@@ -378,3 +378,56 @@ int isEmptyGA(volatile gActivateQueue *d) {
     return 1;
   return 0;
 }
+
+DMAQueue *dma_malloc() {
+  // Allocating the size of the Deque
+  DMAQueue *d;
+  // uint32_t p = 0;
+  // RVCMemoryPoolCreate(d, sizeof(TBDeque), &p);
+  RVCMemoryAllocate(sizeof(DMAQueue), (void **)&d);
+  // d->mPoolID = p;
+  if (d != NULL)
+    d->head = d->tail = NULL;
+  return d;
+}
+
+void dma_push_back(volatile DMAQueue *d, dma_t v) {
+  struct dmaNode *n;
+  uint32_t p = 0;
+  RVCMemoryAllocate(sizeof(struct dmaNode), (void **)&n);
+  if (n == NULL)
+    return;
+  // Setting the value of the node
+  n->val = v;
+  n->prev = d->tail;
+  n->next = NULL;
+  // If the only node then set to first
+  if (d->head == NULL) {
+    d->head = d->tail = n;
+  } else {
+    // Set next of tail to node and set tail to n
+    d->tail->next = n;
+    d->tail = n;
+  }
+}
+
+dma_t dma_pop_front(volatile DMAQueue *d) {
+  // Get value
+  dma_t v = d->head->val;
+  struct dmaNode *n = d->head;
+  if (d->head == d->tail) {
+    d->head = d->tail = NULL;
+  } else
+    // Set head to next
+    d->head = n->next;
+  // free(n);
+  RVCMemoryPoolDeallocate(0, n);
+  return v;
+}
+
+int isEmptyDMA(volatile DMAQueue *d) {
+  // Checking if head is null
+  if (d == NULL || d->head == NULL)
+    return 1;
+  return 0;
+}

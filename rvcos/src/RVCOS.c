@@ -193,6 +193,8 @@ extern uint8_t _pool_size;
 
 extern void InitGraphics(void);
 
+extern volatile DMAQueue *dma_queue;
+
 TStatus RVCInitialize(uint32_t *gp) {
   if (gp == NULL)
     return RVCOS_STATUS_ERROR_INVALID_PARAMETER;
@@ -202,6 +204,7 @@ TStatus RVCInitialize(uint32_t *gp) {
   ticks = 0;
   // Initializing the system memory pool
   initSystemPool();
+  dma_queue=dma_malloc();
   // Initializing the graphics pointers
   InitGraphics();
   // Initializing the ready queue
