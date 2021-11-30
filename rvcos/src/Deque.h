@@ -82,6 +82,13 @@ typedef struct {
   struct TextNode *tail;
 } TBDeque;
 
+// dma struct for waiting for dma to finish
+typedef struct {
+    void * source;
+    void * destination;
+    uint32_t size;
+} dma_t;
+
 void tb_push_back(volatile TBDeque *d, TextBuffer v);
 TextBuffer tb_pop_front(volatile TBDeque *d);
 int isEmptyTB(volatile TBDeque *d);

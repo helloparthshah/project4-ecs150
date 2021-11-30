@@ -3,6 +3,57 @@
 #include <stdint.h>
 #include <string.h>
 
+#define DMASource1      (*((volatile uint32_t *)0x40000020))
+#define DMADestination1 (*((volatile uint32_t *)0x40000024))
+#define DMACommand1     (*((volatile uint32_t *)0x40000028))
+#define DMAStatus1      (*((volatile uint32_t *)0x4000002C))
+#define DMASource2      (*((volatile uint32_t *)0x40000030))
+#define DMADestination2 (*((volatile uint32_t *)0x40000034))
+#define DMACommand2     (*((volatile uint32_t *)0x40000038))
+#define DMAStatus2      (*((volatile uint32_t *)0x4000003C))
+
+
+
+// dma queue
+static Deque dma_queue;
+
+// push to dma
+void dma_queue_push(void * source, void * destination, uint32_t size) {
+    dma_t * dma = malloc(sizeof(dma_t));
+    dma->source = source;
+    dma->destination = destination;
+    dma->size = size;
+    // deque_push(&dma_queue, dma);
+}
+
+void dma_scheduler(void) {
+  // check if there is a dma to be added from dma queue
+ /*  if (deque_size(&dma_queue) > 0) {
+    // get dma from queue
+    dma_t * dma = deque_pop(&dma_queue);
+    if (DMAStatus1 & 0x80000000) {
+      // set dma source and destination
+      DMASource1 = (uint32_t)dma->source;
+      DMADestination1 = (uint32_t)dma->destination;
+      // set dma size
+      DMACommand1 = dma->size;
+      // start dma
+      DMACommand1 |= 0x80000000;
+    } else if (DMAStatus2 & 0x80000000) {
+      // set dma source and destination
+      DMASource2 = (uint32_t)dma->source;
+      DMADestination2 = (uint32_t)dma->destination;
+      // set dma size
+      DMACommand2 = dma->size;
+      // start dma
+      DMACommand2 |= 0x80000000;
+    } else {
+      // add dma back to queue
+      deque_push(&dma_queue, dma);
+    }
+  } */
+}
+
 typedef struct {
   uint32_t DPalette : 2;
   uint32_t DXOffset : 10;
@@ -48,17 +99,26 @@ volatile uint8_t *LargeSpriteDataBuffer[64];
 volatile uint8_t *SmallSpriteDataBuffer[128];
 
 typedef struct {
-  volatile SColor *Palettes[4];
+  SColor* Palette;
+  TPaletteID PaletteID;
+  TGraphicID GraphicID;
+  int type;
+}Palette;
+
+typedef struct {
+  volatile Palette Palettes[8];
   volatile uint32_t used;
 } PaletteArray;
 
 void push_palette(volatile PaletteArray *p, SColor *c) {
-  memcpy((SColor *)p->Palettes[p->used], c, 256 * sizeof(SColor));
+  memcpy((SColor *)p->Palettes[p->used].Palette, c, 256 * sizeof(SColor));
+  p->Palettes[p->used].PaletteID = p->used;
   p->used++;
 }
 
-volatile PaletteArray BackgroundPalettes;
-volatile PaletteArray SpritePalettes;
+volatile PaletteArray PaletteBuffer;
+volatile SColor *BackgroundPalettes[4];
+volatile SColor *SpritePalettes[4];
 
 volatile SBackgroundControl *BackgroundControls =
     (volatile SBackgroundControl *)0x500FF100;
@@ -76,10 +136,13 @@ extern void writei(uint32_t, uint32_t);
 
 void InitGraphics(void) {
   for (int Index = 0; Index < 4; Index++) {
-    BackgroundPalettes.Palettes[Index] =
+    BackgroundPalettes[Index] =
         (volatile SColor *)(0x500FC000 + 256 * sizeof(SColor) * Index);
-    SpritePalettes.Palettes[Index] =
+    SpritePalettes[Index] =
         (volatile SColor *)(0x500FD000 + 256 * sizeof(SColor) * Index);
+  }
+  for (int Index = 0; Index < 8; Index++) {
+    RVCMemoryAllocate(256*sizeof(SColor), (void **)&PaletteBuffer.Palettes[Index].Palette);
   }
   for (int Index = 0; Index < 5; Index++) {
     BackgroundData[Index] =
@@ -93,10 +156,10 @@ void InitGraphics(void) {
   }
 
   //  Loading the default palette into position 0
-  BackgroundPalettes.used = 0;
-  SpritePalettes.used = 0;
-  push_palette(&BackgroundPalettes, RVCOSPaletteDefaultColors);
-  push_palette(&SpritePalettes, RVCOSPaletteDefaultColors);
+  // BackgroundPalettes.used = 0;
+  PaletteBuffer.used = 0;
+  push_palette(&PaletteBuffer, RVCOSPaletteDefaultColors);
+  // push_palette(&SpritePalettes, RVCOSPaletteDefaultColors);
 }
 
 volatile TVideoMode currentVideoMode = RVCOS_VIDEO_MODE_TEXT;
@@ -174,15 +237,26 @@ TStatus RVCGraphicDelete(TGraphicID gid) { //
 }
 
 
+int nBgPal = 0;
+int nSpPal = 0;
+
 void setData(TGraphicID gid, SGraphicPositionRef pos,
                            SGraphicDimensionsRef dim, TPaletteID pid){
   if (gid < 4) {
     BackgroundControls[gid].DXOffset = 512 + pos->DXPosition;
     BackgroundControls[gid].DYOffset = 288 + pos->DYPosition;
     BackgroundControls[gid].DZ = pos->DZPosition;
-    BackgroundControls[gid].DPalette = pid;
+    // if(PaletteBuffer.Palettes[pid].GraphicID != gid){
+      BackgroundControls[gid].DPalette = pid;
+      PaletteBuffer.Palettes[pid].GraphicID = gid;
+      memcpy((SColor *)BackgroundPalettes[pid], (void*)PaletteBuffer.Palettes[pid].Palette,
+          256 * sizeof(SColor));
+      // }
     if(BackgroundDirty[gid]==1){
       BackgroundDirty[gid] = 0;
+      // push to dma queue
+      dma_queue_push((void *)BackgroundDataBuffer[gid], (void *)BackgroundData[gid], 512*288);
+      // set DMASource to BackgroundDataBuffer[gid]
     memcpy((void*)BackgroundData[gid], (void*)BackgroundDataBuffer[gid], 512*288);
     }
   } else if (gid < 64 + 4) {
@@ -190,9 +264,17 @@ void setData(TGraphicID gid, SGraphicPositionRef pos,
     LargeSpriteControls[gid - 4].DYOffset = 64 + pos->DYPosition;
     LargeSpriteControls[gid - 4].DWidth = dim->DWidth-33;
     LargeSpriteControls[gid - 4].DHeight = dim->DHeight-33;
-    LargeSpriteControls[gid - 4].DPalette = pid;
+    // LargeSpriteControls[gid - 4].DPalette = pid;
+    if(PaletteBuffer.Palettes[pid].GraphicID != gid){
+      LargeSpriteControls[gid - 4].DPalette = pid;
+      PaletteBuffer.Palettes[pid].GraphicID = gid;
+      memcpy((SColor *)SpritePalettes[pid], (void*)PaletteBuffer.Palettes[pid].Palette,
+          256 * sizeof(SColor));
+      }
     if(LargeSpriteDirty[gid-4]==1){
       LargeSpriteDirty[gid-4] = 0;
+      // push to dma queue
+      dma_queue_push((void*)LargeSpriteDataBuffer[gid-4], (void*)LargeSpriteData[gid-4], 64*64);
     memcpy((void*)LargeSpriteData[gid - 4], (void*)LargeSpriteDataBuffer[gid - 4], 64*64);
     }
   } else if (gid < 128 + 64 + 4) {
@@ -202,8 +284,16 @@ void setData(TGraphicID gid, SGraphicPositionRef pos,
     SmallSpriteControls[gid - 68].DHeight = dim->DHeight-1;
     SmallSpriteControls[gid - 68].DPalette = pid;
     SmallSpriteControls[gid - 68].DZ = pos->DZPosition;
+    if(PaletteBuffer.Palettes[pid].GraphicID != gid){
+      SmallSpriteControls[gid - 68].DPalette = pid;
+      PaletteBuffer.Palettes[pid].GraphicID = gid;
+      memcpy((SColor *)SpritePalettes[pid], (void*)PaletteBuffer.Palettes[pid].Palette,
+          256 * sizeof(SColor));
+      }
     if(SmallSpriteDirty[gid-68]==1){
       SmallSpriteDirty[gid-68] = 0;
+      // push to dma queue
+      dma_queue_push((void*)SmallSpriteDataBuffer[gid-68], (void*)SmallSpriteData[gid-68], 16*16);
     memcpy((void*)SmallSpriteData[gid - 68], (void*)SmallSpriteDataBuffer[gid - 68], 16*16);
     }
   }
@@ -297,9 +387,11 @@ TStatus RVCGraphicDraw(TGraphicID gid, SGraphicPositionRef pos,
 }
 
 TStatus RVCPaletteCreate(TPaletteIDRef pidref) {
-  *pidref = SpritePalettes.used;
-  push_palette(&SpritePalettes, RVCOSPaletteDefaultColors);
-  push_palette(&BackgroundPalettes, RVCOSPaletteDefaultColors);
+  // *pidref = SpritePalettes.used;
+  // push_palette(&SpritePalettes, RVCOSPaletteDefaultColors);
+  // push_palette(&BackgroundPalettes, RVCOSPaletteDefaultColors);
+  *pidref = PaletteBuffer.used;
+  push_palette(&PaletteBuffer, RVCOSPaletteDefaultColors);
   return RVCOS_STATUS_SUCCESS;
 }
 
@@ -309,9 +401,11 @@ TStatus RVCPaletteDelete(TPaletteID pid) { //
 
 TStatus RVCPaletteUpdate(TPaletteID pid, SColorRef cols, TPaletteIndex offset,
                          uint32_t count) {
-  memcpy((SColor *)SpritePalettes.Palettes[pid]+offset, cols,
-         count * sizeof(SColor));
-  memcpy((SColor *)BackgroundPalettes.Palettes[pid]+offset, cols,
+  // memcpy((SColor *)SpritePalettes.Palettes[pid]+offset, cols,
+  //        count * sizeof(SColor));
+  // memcpy((SColor *)BackgroundPalettes.Palettes[pid]+offset, cols,
+  //        count * sizeof(SColor));
+  memcpy((SColor *)PaletteBuffer.Palettes[pid].Palette+offset, cols,
          count * sizeof(SColor));
   return RVCOS_STATUS_SUCCESS;
 }
