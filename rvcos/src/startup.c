@@ -76,7 +76,9 @@ void init(void) {
 
   // csr_write_mie(0x888);    // Enable all interrupt sources
   // csr_enable_interrupts(); // Global interrupt enable
-  IER = 0x2;
+  // IER &= 0x2;
+  // enable 5th and 6th bits
+  IER = 0x32;
   MTIMECMP_LOW = 1;
   MTIMECMP_HIGH = 0;
 }
@@ -100,8 +102,10 @@ volatile uint32_t upcall_flag = 0;
 void CallUpcall(void *param, TUpcallPointer upcall, uint32_t *gp, uint32_t *sp);
 
 void c_interrupt_handler(void) {
-  // call dma scheduler
-  dma_scheduler();
+  if(VIP & 0x20 || VIP & 0x10) {
+    // call dma scheduler
+    dma_scheduler();
+  }
   uint32_t mcause = csr_mcause_read();
   if (mcause == 0x80000007) {
     uint64_t NewCompare = (((uint64_t)MTIMECMP_HIGH) << 32) | MTIMECMP_LOW;
